@@ -1,0 +1,448 @@
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜GitHub Sync</title><style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:28px 18px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 2px 8px #0f172a0a}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px 11px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}.primary{background:#0f172a;color:#fff}.secondary{background:#e2e8f0}.success{background:#059669;color:#fff}.danger{background:#fee2e2;color:#b91c1c}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#64748b;font-size:13px}[hidden]{display:none!important}.hidden{display:none!important}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left;font-size:13px}.status{padding:10px 12px;border-radius:9px;background:#f1f5f9;margin-top:12px;white-space:pre-wrap}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1,h2{margin:0 0 14px}code{background:#f1f5f9;padding:2px 5px;border-radius:5px}.login{max-width:620px;margin:8vh auto}.note{background:#fffbeb;border:1px solid #fde68a;padding:11px;border-radius:9px;font-size:13px}
+.login-card{max-width:520px;margin:10vh auto}.login-card h1{font-size:30px}.login-error{margin-top:12px;color:#b91c1c;font-weight:700;font-size:13px}.login-actions{margin-top:16px}.logout{background:#475569;color:#fff} input:disabled{background:#f1f5f9;color:#475569;font-weight:700;cursor:not-allowed}
+</style></head><body>
+<div class="wrap">
+  <div id="loginView" class="card login-card">
+    <h1 style="text-align:center;margin-bottom:22px">登入</h1>
+    <div class="field"><label>帳號</label><input id="loginAccount" autocomplete="username" autofocus=""></div>
+    <div class="field" style="margin-top:14px"><label>密碼</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
+    <div class="login-actions"><button class="btn primary" id="loginBtn" style="width:100%">登入</button></div>
+    <div id="loginError" class="login-error" style="text-align:center"></div>
+  </div>
+
+  <div id="adminView" class="hidden" hidden style="display:none">
+    <div class="top">
+      <div>
+        <h1>稅務參數後台管理</h1>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">v2026.09</strong>　｜　GitHub 同步版</div>
+      </div>
+      <button class="btn logout" id="logoutBtn">登出</button>
+    </div>
+
+    <div class="card"><h2>前台首頁文字</h2>
+      <div class="grid">
+        <div class="field"><label>主標題</label><input data-key="pageTitle" type="text" placeholder="創業節稅試算"></div>
+        <div class="field"><label>副標題／說明文字</label><textarea data-key="pageSubtitle" rows="3" placeholder="請輸入前台首頁說明文字"></textarea></div>
+      </div>
+      <div class="muted" style="margin-top:8px;line-height:1.6">這裡修改後，下載／更新 <code>tax-config.json</code>，前台首頁的標題與說明文字就會同步變更。</div>
+    </div>
+
+    <div class="card"><h2>年度參數讀取與更新</h2>
+      <div class="grid">
+        <div class="field">
+          <label>所得年度（民國）</label>
+          <input id="taxYearInput" data-key="taxYear" type="number" min="1" step="1">
+          <div class="muted" style="margin-top:6px">上方選擇／輸入哪一年度，下方按鈕就會讀取該年度的預設參數。</div>
+        </div>
+        <div class="field"><label>參數更新日期</label><input data-key="lastUpdated" type="date"></div>
+        <div class="field">
+          <label>本年度參數參考來源</label>
+          <div id="sourceLabelDisplay" class="muted" style="margin-bottom:6px;line-height:1.5">財政部：公告115年度綜合所得稅及所得基本稅額相關免稅額、扣除額及課稅級距</div>
+          <div class="row" style="margin-top:8px">
+            <a id="sourceUrlLink" class="btn secondary" href="https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=34b463dc8f1b49f29d440d92a6fd5139" target="_blank" rel="noopener noreferrer" style="text-decoration: none; opacity: 1; pointer-events: auto;">開啟財政部參考來源</a>
+          </div>
+          <div class="muted" style="margin-top:6px">參考來源會依上方所選年度自動切換；不顯示網址，管理者不可修改。</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn success" id="presetBtn">一鍵套用 115 年度完整參數</button>
+        <button class="btn secondary" id="reloadBtn">重新讀取目前正式參數</button>
+        <button class="btn secondary" id="exportBtn">匯出 JSON</button>
+        <label class="btn secondary" style="cursor:pointer">匯入 JSON<input id="importFile" type="file" accept="application/json" hidden=""></label>
+      </div>
+    </div>
+
+    <div class="card"><h2>免稅額／一般與特別扣除額</h2>
+      <div id="deductionGrid" class="grid"><div class="field"><label>每人基本生活費</label><input data-key="basicLivingExpense" type="number" step="any"></div><div class="field"><label>一般免稅額</label><input data-key="exemption" type="number" step="any"></div><div class="field"><label>70歲以上免稅額</label><input data-key="seniorExemption" type="number" step="any"></div><div class="field"><label>標準扣除額－單身</label><input data-key="standardDeductionSingle" type="number" step="any"></div><div class="field"><label>標準扣除額－夫妻</label><input data-key="standardDeductionMarried" type="number" step="any"></div><div class="field"><label>薪資所得特別扣除額</label><input data-key="salarySpecialDeduction" type="number" step="any"></div><div class="field"><label>身心障礙特別扣除額</label><input data-key="disabilitySpecialDeduction" type="number" step="any"></div><div class="field"><label>儲蓄投資特別扣除額上限</label><input data-key="savingsInvestmentDeduction" type="number" step="any"></div><div class="field"><label>教育學費特別扣除額</label><input data-key="educationTuitionDeduction" type="number" step="any"></div><div class="field"><label>幼兒學前－第1名子女</label><input data-key="preschoolFirstChildDeduction" type="number" step="any"></div><div class="field"><label>幼兒學前－第2名以上每人</label><input data-key="preschoolAdditionalChildDeduction" type="number" step="any"></div><div class="field"><label>長期照顧特別扣除額</label><input data-key="longTermCareDeduction" type="number" step="any"></div><div class="field"><label>房屋租金支出特別扣除額</label><input data-key="houseRentDeduction" type="number" step="any"></div></div>
+    </div>
+
+    <div class="card"><h2>股利、營所稅與公司參數</h2>
+      <div id="otherGrid" class="grid"><div class="field"><label>股利抵減率</label><input data-key="dividendCreditRate" type="number" step="any"></div><div class="field"><label>股利抵減上限</label><input data-key="dividendCreditCap" type="number" step="any"></div><div class="field"><label>股利分開計稅率</label><input data-key="dividendSeparateRate" type="number" step="any"></div><div class="field"><label>法定盈餘公積提列率</label><input data-key="legalReserveRate" type="number" step="any"></div><div class="field"><label>營所稅免徵門檻</label><input data-key="businessTaxExemptThreshold" type="number" step="any"></div><div class="field"><label>營所稅過渡門檻</label><input data-key="businessTaxTransitionThreshold" type="number" step="any"></div><div class="field"><label>營所稅過渡區間計算係數</label><input data-key="businessTaxTransitionRate" type="number" step="any"><div class="muted" style="margin-top:6px;line-height:1.5">適用 120,000～200,000 元：超過 120,000 元部分 × 50%</div></div><div class="field"><label>營所稅率</label><input data-key="businessTaxRate" type="number" step="any"></div></div>
+    </div>
+
+    <div class="card"><h2>綜合所得稅課稅級距</h2>
+      <div class="muted" style="margin-bottom:10px;line-height:1.6">各年度標準綜所稅級距均為固定結構，不提供刪除；管理者可調整級距上限、稅率與累進差額。最後一級固定為「無上限（最後一級）」並鎖定。</div>
+      <table class="table">
+        <thead><tr><th>級距上限（元）</th><th>稅率</th><th>累進差額</th><th>狀態</th></tr></thead>
+        <tbody id="bracketsBody"><tr><td><input type="number" step="1" min="0" value="610000" placeholder="請輸入級距上限"></td><td><input type="number" step="0.001" min="0" max="1" value="0.05"></td><td><input type="number" step="1" value="0"></td><td><span class="muted">固定級距</span></td></tr><tr><td><input type="number" step="1" min="0" value="1380000" placeholder="請輸入級距上限"></td><td><input type="number" step="0.001" min="0" max="1" value="0.12"></td><td><input type="number" step="1" value="42700"></td><td><span class="muted">固定級距</span></td></tr><tr><td><input type="number" step="1" min="0" value="2770000" placeholder="請輸入級距上限"></td><td><input type="number" step="0.001" min="0" max="1" value="0.2"></td><td><input type="number" step="1" value="153100"></td><td><span class="muted">固定級距</span></td></tr><tr><td><input type="number" step="1" min="0" value="5190000" placeholder="請輸入級距上限"></td><td><input type="number" step="0.001" min="0" max="1" value="0.3"></td><td><input type="number" step="1" value="430100"></td><td><span class="muted">固定級距</span></td></tr><tr><td><input type="text" value="無上限（最後一級）" disabled="" title="最後一級無金額上限"></td><td><input type="number" step="0.001" value="0.4"></td><td><input type="number" step="1" value="949100"></td><td><span class="muted">固定最後一級</span></td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card"><h2>前台計算項目啟用設定</h2>
+      <p class="muted" style="line-height:1.7">
+        此區不是新增自訂名稱。請從上方既有的免稅額／扣除額項目選擇是否啟用。
+        <strong>勾選「啟用」後，前台會自動新增對應欄位，並同步納入綜合所得稅計算。</strong>
+      </p>
+      <table class="table">
+        <thead><tr><th>項目</th><th>年度設定值</th><th>前台新增＋加入計算</th><th>前台處理方式</th></tr></thead>
+        <tbody id="deductionSettingsBody"><tr>
+      <td><strong>70歲以上免稅額</strong></td>
+      <td>151,500 元／人</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增「70歲以上受扶養親屬人數」，以一般免稅額與高齡免稅額差額計算。</td></tr><tr>
+      <td><strong>薪資所得特別扣除額</strong></td>
+      <td>227,000 元／人上限</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台顯示自動計算欄；依本人及配偶薪資分別計算，每人以上方設定值為上限。</td></tr><tr>
+      <td><strong>身心障礙特別扣除額</strong></td>
+      <td>227,000 元／人</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增符合資格人數欄位。</td></tr><tr>
+      <td><strong>儲蓄投資特別扣除額上限</strong></td>
+      <td>270,000 元／戶上限</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增實際可扣除金額欄位，最高以上方設定值為限。</td></tr><tr>
+      <td><strong>教育學費特別扣除額</strong></td>
+      <td>25,000 元／人</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增符合資格子女人數欄位。</td></tr><tr>
+      <td><strong>幼兒學前－第1名子女</strong></td>
+      <td>150,000 元</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增第1名符合資格幼兒欄位（0或1人）。</td></tr><tr>
+      <td><strong>幼兒學前－第2名以上每人</strong></td>
+      <td>225,000 元／人</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增第2名以上符合資格幼兒人數欄位。</td></tr><tr>
+      <td><strong>長期照顧特別扣除額</strong></td>
+      <td>180,000 元／人</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增符合資格人數欄位。</td></tr><tr>
+      <td><strong>房屋租金支出特別扣除額</strong></td>
+      <td>180,000 元／戶上限</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable"> 啟用
+      </label></td>
+      <td class="muted">前台新增實際符合資格租金扣除額欄位，最高以上方設定值為限。</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card"><h2>GitHub 同步更新前台</h2>
+      <p class="muted" style="line-height:1.7">
+        這個版本可直接把目前後台參數寫入 GitHub Repository 的 <code>tax-config.json</code>。
+        GitHub Pages 完成部署後，前台就會自動讀取新參數，不需要再手動下載後上傳。
+      </p>
+      <div class="grid">
+        <div class="field"><label>GitHub Owner</label><input id="ghOwner" type="text" value="cronos-2026"></div>
+        <div class="field"><label>Repository</label><input id="ghRepo" type="text" value="cronos-2026-tax-calculator"></div>
+        <div class="field"><label>Branch</label><input id="ghBranch" type="text" value="main"></div>
+        <div class="field"><label>前台參數檔路徑</label><input id="ghPath" type="text" value="tax-config.json"></div>
+      </div>
+      <div class="field" style="margin-top:14px">
+        <label>GitHub Fine-grained Token</label>
+        <input id="ghToken" type="password" autocomplete="off" placeholder="貼上 GitHub Token（只保留在目前瀏覽器頁面，不寫入 tax-config.json）">
+        <div class="muted" style="margin-top:6px;line-height:1.6">
+          建議 Token 只授權此 Repository，Repository permissions → Contents 設為 Read and write。
+        </div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn success" id="syncGithubBtn">同步更新前台</button>
+        <button class="btn secondary" id="saveLocalBtn">下載 tax-config.json 備份</button>
+      </div>
+      <div id="status" class="status">尚未同步。</div>
+    </div>
+  </div>
+</div>
+<script>
+const ADMIN_ACCOUNT='admin';
+const ADMIN_PASSWORD='password';
+function showLogin(){
+  const login=document.getElementById('loginView');
+  const admin=document.getElementById('adminView');
+  login.hidden=false;
+  login.classList.remove('hidden');
+  login.style.removeProperty('display');
+  admin.hidden=true;
+  admin.classList.add('hidden');
+  admin.style.display='none';
+  document.getElementById('loginPassword').value='';
+  document.getElementById('loginError').textContent='';
+}
+function enterAdmin(){
+  const account=document.getElementById('loginAccount').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  if(account!==ADMIN_ACCOUNT || password!==ADMIN_PASSWORD){
+    document.getElementById('loginError').textContent='帳號或密碼錯誤。';
+    return;
+  }
+  const login=document.getElementById('loginView');
+  const admin=document.getElementById('adminView');
+  login.hidden=true;
+  login.classList.add('hidden');
+  login.style.display='none';
+  admin.hidden=false;
+  admin.classList.remove('hidden');
+  admin.style.removeProperty('display');
+  document.getElementById('loginPassword').value='';
+  loadConfig().catch(e=>status('讀取失敗：'+e.message));
+}
+document.getElementById('loginBtn').onclick=enterAdmin;
+document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')enterAdmin()});
+document.getElementById('logoutBtn').onclick=showLogin;
+const FIELDS={deductions:[['basicLivingExpense','每人基本生活費'],['exemption','一般免稅額'],['seniorExemption','70歲以上免稅額'],['standardDeductionSingle','標準扣除額－單身'],['standardDeductionMarried','標準扣除額－夫妻'],['salarySpecialDeduction','薪資所得特別扣除額'],['disabilitySpecialDeduction','身心障礙特別扣除額'],['savingsInvestmentDeduction','儲蓄投資特別扣除額上限'],['educationTuitionDeduction','教育學費特別扣除額'],['preschoolFirstChildDeduction','幼兒學前－第1名子女'],['preschoolAdditionalChildDeduction','幼兒學前－第2名以上每人'],['longTermCareDeduction','長期照顧特別扣除額'],['houseRentDeduction','房屋租金支出特別扣除額']],other:[['dividendCreditRate','股利抵減率'],['dividendCreditCap','股利抵減上限'],['dividendSeparateRate','股利分開計稅率'],['legalReserveRate','法定盈餘公積提列率'],['businessTaxExemptThreshold','營所稅免徵門檻'],['businessTaxTransitionThreshold','營所稅過渡門檻'],['businessTaxTransitionRate','營所稅過渡區間計算係數'],['businessTaxRate','營所稅率']]};
+let cfg={};
+let annualPresetsCache=null;
+function fieldHtml(k,n){
+  let note='';
+  if(k==='businessTaxTransitionRate'){
+    const low=Number(cfg.businessTaxExemptThreshold||0).toLocaleString('en-US');
+    const high=Number(cfg.businessTaxTransitionThreshold||0).toLocaleString('en-US');
+    const pct=(Number(cfg.businessTaxTransitionRate||0)*100).toLocaleString('zh-TW',{maximumFractionDigits:2});
+    note=`<div class="muted" style="margin-top:6px;line-height:1.5">適用 ${low}～${high} 元：超過 ${low} 元部分 × ${pct}%</div>`;
+  }
+  return `<div class="field"><label>${n}</label><input data-key="${k}" type="number" step="any">${note}</div>`;
+}
+function currentSiteVersion(){const d=new Date();return `v${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}`}
+function stampVersion(){cfg.siteVersion=currentSiteVersion();cfg.lastUpdated=new Date().toISOString().slice(0,10);const el=document.getElementById('versionLabel');if(el)el.textContent=cfg.siteVersion}
+function updateSourceLink(sourceCfg=null){
+  const label=document.getElementById('sourceLabelDisplay');
+  const link=document.getElementById('sourceUrlLink');
+  if(!link) return;
+  const src=sourceCfg || cfg || {};
+  const url=(src.sourceUrl || '').trim();
+  const valid=/^https?:\/\//i.test(url);
+  if(label) label.textContent=src.sourceLabel || '財政部官方參考來源';
+  link.href=valid ? url : '#';
+  link.style.opacity=valid ? '1' : '.5';
+  link.style.pointerEvents=valid ? 'auto' : 'none';
+  link.textContent=valid ? '開啟財政部參考來源' : '尚未設定來源';
+}
+async function syncSourceLinkBySelectedYear(){
+  try{
+    const yearEl=document.getElementById('taxYearInput');
+    const y=String(Number(yearEl?.value || cfg.taxYear || 115));
+    if(!annualPresetsCache){
+      const r=await fetch('./annual-presets.json?ts='+Date.now());
+      if(!r.ok) throw new Error('annual-presets.json 讀取失敗');
+      annualPresetsCache=await r.json();
+    }
+    if(annualPresetsCache[y]){
+      updateSourceLink(annualPresetsCache[y]);
+    }else{
+      updateSourceLink({sourceLabel:`${y} 年度尚未設定參考來源`,sourceUrl:''});
+    }
+  }catch(e){
+    updateSourceLink(cfg);
+  }
+}
+function updatePresetButton(){
+  const y=Number(document.getElementById('taxYearInput')?.value || cfg.taxYear || 115);
+  const btn=document.getElementById('presetBtn');
+  if(btn) btn.textContent=`一鍵套用 ${y} 年度完整參數`;
+}
+function render(){
+  const vl=document.getElementById('versionLabel');
+  if(vl) vl.textContent=cfg.siteVersion||currentSiteVersion();
+
+  const dg=document.getElementById('deductionGrid');
+  const og=document.getElementById('otherGrid');
+  if(dg) dg.innerHTML=FIELDS.deductions.map(x=>fieldHtml(...x)).join('');
+  if(og) og.innerHTML=FIELDS.other.map(x=>fieldHtml(...x)).join('');
+
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    el.value=cfg[el.dataset.key]??'';
+    el.oninput=()=>{
+      cfg[el.dataset.key]=el.type==='number'?Number(el.value):el.value;
+      if(el.dataset.key==='taxYear'){
+        updatePresetButton();
+        syncSourceLinkBySelectedYear();
+      }
+    };
+  });
+
+  updatePresetButton();
+  syncSourceLinkBySelectedYear();
+  renderBrackets();
+  renderDeductionSettings();
+}
+function renderBrackets(){
+  const b=document.getElementById('bracketsBody');
+  b.innerHTML='';
+  const rows=cfg.brackets||[];
+  rows.forEach((x,i)=>{
+    const isLast=i===rows.length-1;
+    const tr=document.createElement('tr');
+    if(isLast){
+      x.limit=null;
+      tr.innerHTML=`<td><input type="text" value="無上限（最後一級）" disabled title="最後一級無金額上限"></td><td><input type="number" step="0.001" value="${x.rate??0}"></td><td><input type="number" step="1" value="${x.diff??0}"></td><td><span class="muted">固定最後一級</span></td>`;
+      const ins=tr.querySelectorAll('input');
+      ins[1].oninput=()=>x.rate=Number(ins[1].value);
+      ins[2].oninput=()=>x.diff=Number(ins[2].value);
+    }else{
+      tr.innerHTML=`<td><input type="number" step="1" min="0" value="${x.limit??''}" placeholder="請輸入級距上限"></td><td><input type="number" step="0.001" min="0" max="1" value="${x.rate??0}"></td><td><input type="number" step="1" value="${x.diff??0}"></td><td><span class="muted">固定級距</span></td>`;
+      const ins=tr.querySelectorAll('input');
+      ins[0].oninput=()=>x.limit=ins[0].value===''?null:Number(ins[0].value);
+      ins[1].oninput=()=>x.rate=Number(ins[1].value);
+      ins[2].oninput=()=>x.diff=Number(ins[2].value);
+    }
+    b.appendChild(tr);
+  });
+}
+
+const OPTIONAL_DEDUCTION_META = {
+  seniorExemption:{label:'70歲以上免稅額', unit:'元／人', note:'前台新增「70歲以上受扶養親屬人數」，以一般免稅額與高齡免稅額差額計算。'},
+  salarySpecialDeduction:{label:'薪資所得特別扣除額', unit:'元／人上限', note:'前台顯示自動計算欄；依本人及配偶薪資分別計算，每人以上方設定值為上限。'},
+  disabilitySpecialDeduction:{label:'身心障礙特別扣除額', unit:'元／人', note:'前台新增符合資格人數欄位。'},
+  savingsInvestmentDeduction:{label:'儲蓄投資特別扣除額上限', unit:'元／戶上限', note:'前台新增實際可扣除金額欄位，最高以上方設定值為限。'},
+  educationTuitionDeduction:{label:'教育學費特別扣除額', unit:'元／人', note:'前台新增符合資格子女人數欄位。'},
+  preschoolFirstChildDeduction:{label:'幼兒學前－第1名子女', unit:'元', note:'前台新增第1名符合資格幼兒欄位（0或1人）。'},
+  preschoolAdditionalChildDeduction:{label:'幼兒學前－第2名以上每人', unit:'元／人', note:'前台新增第2名以上符合資格幼兒人數欄位。'},
+  longTermCareDeduction:{label:'長期照顧特別扣除額', unit:'元／人', note:'前台新增符合資格人數欄位。'},
+  houseRentDeduction:{label:'房屋租金支出特別扣除額', unit:'元／戶上限', note:'前台新增實際符合資格租金扣除額欄位，最高以上方設定值為限。'}
+};
+function ensureDeductionSettings(){
+  cfg.deductionSettings = cfg.deductionSettings || {};
+  Object.keys(OPTIONAL_DEDUCTION_META).forEach(k=>{
+    if(!cfg.deductionSettings[k] || typeof cfg.deductionSettings[k] !== 'object'){
+      cfg.deductionSettings[k]={enabled:false};
+    }
+    if(cfg.deductionSettings[k].enabled == null) cfg.deductionSettings[k].enabled=false;
+  });
+}
+function renderDeductionSettings(){
+  ensureDeductionSettings();
+  const body=document.getElementById('deductionSettingsBody');
+  if(!body) return;
+  body.innerHTML='';
+  Object.entries(OPTIONAL_DEDUCTION_META).forEach(([key,m])=>{
+    const tr=document.createElement('tr');
+    const st=cfg.deductionSettings[key];
+    tr.innerHTML=`
+      <td><strong>${m.label}</strong></td>
+      <td>${Number(cfg[key]||0).toLocaleString('en-US')} ${m.unit}</td>
+      <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
+        <input type="checkbox" class="deduction-enable" ${st.enabled?'checked':''}> 啟用
+      </label></td>
+      <td class="muted">${m.note}</td>`;
+    tr.querySelector('.deduction-enable').onchange=e=>{
+      st.enabled=e.target.checked;
+      status(`${m.label}：${st.enabled?'已啟用，前台將新增欄位並加入計算':'已停用，前台不顯示也不計算'}`);
+    };
+    body.appendChild(tr);
+  });
+}
+
+function esc(s){return String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+async function loadConfig(){cfg=await fetch('./tax-config.json?ts='+Date.now()).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()});render();status('已載入正式參數。')}
+function status(t){document.getElementById('status').textContent=t}
+function download(){stampVersion();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}));a.download='tax-config.json';a.click();URL.revokeObjectURL(a.href)}
+async function applyPreset(){
+  try{
+    const yearEl=document.getElementById('taxYearInput');
+    const y=String(Number(yearEl?.value || cfg.taxYear || 115));
+    if(!y || y==='NaN') throw new Error('請先選擇正確的所得年度');
+    const all=annualPresetsCache || await fetch('./annual-presets.json?ts='+Date.now()).then(r=>{
+      if(!r.ok) throw new Error('annual-presets.json 讀取失敗（HTTP '+r.status+'）');
+      return r.json();
+    });
+    annualPresetsCache=all;
+    if(!all[y]) throw new Error(`尚未建立 ${y} 年度參數。請先在 annual-presets.json 新增 ${y} 年度資料。`);
+    const keepVersion=cfg.siteVersion||currentSiteVersion();
+    cfg=structuredClone(all[y]);
+    cfg.taxYear=Number(y);
+    cfg.siteVersion=keepVersion;
+    render();
+    status(`已讀取 ${y} 年度參數。檢查無誤後可下載更新後的 tax-config.json。`);
+  }catch(e){status('讀取失敗：'+e.message)}
+}
+
+function bytesToBase64(str){
+  const bytes=new TextEncoder().encode(str);
+  let bin='';
+  const chunk=0x8000;
+  for(let i=0;i<bytes.length;i+=chunk){
+    bin+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+  }
+  return btoa(bin);
+}
+async function githubRequest(url, options={}){
+  const token=document.getElementById('ghToken').value.trim();
+  if(!token) throw new Error('請先輸入 GitHub Token');
+  const headers={
+    'Accept':'application/vnd.github+json',
+    'Authorization':'Bearer '+token,
+    'X-GitHub-Api-Version':'2022-11-28',
+    ...(options.headers||{})
+  };
+  const r=await fetch(url,{...options,headers});
+  let data=null;
+  const raw=await r.text();
+  try{data=raw?JSON.parse(raw):null}catch{data=raw}
+  if(!r.ok){
+    const msg=(data && data.message) ? data.message : ('HTTP '+r.status);
+    throw new Error(msg);
+  }
+  return data;
+}
+async function syncToGithub(){
+  const btn=document.getElementById('syncGithubBtn');
+  try{
+    btn.disabled=true;
+    status('正在讀取 GitHub 目前版本…');
+    stampVersion();
+
+    const owner=document.getElementById('ghOwner').value.trim();
+    const repo=document.getElementById('ghRepo').value.trim();
+    const branch=document.getElementById('ghBranch').value.trim()||'main';
+    const path=document.getElementById('ghPath').value.trim()||'tax-config.json';
+    if(!owner || !repo) throw new Error('GitHub Owner / Repository 不可空白');
+
+    const api=`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(branch)}`;
+    const current=await githubRequest(api,{method:'GET'});
+    if(!current || !current.sha) throw new Error('無法取得目前 tax-config.json 的 SHA');
+
+    const body={
+      message:`後台同步更新稅務參數 ${cfg.siteVersion||''}`.trim(),
+      content:bytesToBase64(JSON.stringify(cfg,null,2)),
+      sha:current.sha,
+      branch
+    };
+
+    status('正在寫入 GitHub…');
+    await githubRequest(api.split('?ref=')[0],{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+
+    status('同步成功。GitHub 已更新 tax-config.json；GitHub Pages 通常需要約 1～2 分鐘完成部署，之後前台重新整理即可看到新參數。');
+  }catch(e){
+    status('同步失敗：'+e.message);
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+document.getElementById('reloadBtn').onclick=()=>loadConfig().catch(e=>status('讀取失敗：'+e.message));
+document.getElementById('presetBtn').onclick=applyPreset;
+document.getElementById('saveLocalBtn').onclick=download;
+document.getElementById('syncGithubBtn').onclick=syncToGithub;
+document.getElementById('exportBtn').onclick=download;
+document.getElementById('importFile').onchange=async e=>{
+  try{
+    cfg=JSON.parse(await e.target.files[0].text());
+    render();
+    status('已匯入 JSON，尚未發布。');
+  }catch(err){
+    status('匯入失敗：'+err.message);
+  }
+};
+showLogin();
+</script></body></html>
