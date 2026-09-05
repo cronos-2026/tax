@@ -108,3 +108,26 @@ Token 必須使用 Fine-grained personal access token：
 `Only select repositories → cronos-2026/tax`
 Repository permissions：
 `Contents → Read and write`
+
+
+# TAX FINAL 2026.09 — 實際 GitHub Pages 部署設定
+
+本完整版本已固定為目前實際網站：
+
+- GitHub Repository：`cronos-2026/tax`
+- Branch：`main`
+- 前台：`https://cronos-2026.github.io/tax/`
+- 後台：`https://cronos-2026.github.io/tax/admin.html`
+- 後台同步檔案：`tax-config.json`
+
+後台同步欄位已固定：
+- Owner：`cronos-2026`
+- Repository：`tax`
+- Branch：`main`
+- 路徑：`tax-config.json`
+
+Fine-grained Token：
+- Repository access：Only select repositories → `cronos-2026/tax`
+- Repository permissions：Contents → Read and write
+
+後台提供「測試 GitHub Token」與「同步更新前台」。
