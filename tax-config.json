@@ -72,19 +72,19 @@
       "locked": true
     },
     "seniorExemption": {
-      "enabled": false
+      "enabled": true
     },
     "salarySpecialDeduction": {
-      "enabled": false
+      "enabled": true
     },
     "disabilitySpecialDeduction": {
-      "enabled": false
+      "enabled": true
     },
     "savingsInvestmentDeduction": {
-      "enabled": false
+      "enabled": true
     },
     "educationTuitionDeduction": {
-      "enabled": false
+      "enabled": true
     },
     "preschoolFirstChildDeduction": {
       "enabled": false
@@ -98,5 +98,6 @@
     "houseRentDeduction": {
       "enabled": false
     }
-  }
+  },
+  "siteVersion": "v2026.09"
 }
