@@ -40,7 +40,7 @@ GitHub Pages 無法由瀏覽器直接覆寫 Repository。
 
 預設：
 - Owner：`cronos-2026`
-- Repository：`cronos-2026-tax-calculator`
+- Repository：`cronos-2026.github.io`
 - Branch：`main`
 - 參數檔：`tax-config.json`
 
@@ -57,3 +57,34 @@ GitHub Pages 無法由瀏覽器直接覆寫 Repository。
 - 本版不會把 Token 硬編碼在 `admin.html`。
 - Token 僅存在目前開啟的瀏覽器頁面記憶體中；關閉或重新整理頁面後需重新輸入。
 - 因為 GitHub Pages 是公開靜態網站，請不要把長期高權限 Token 寫進 HTML。
+
+
+## GitHub 根網址專用
+
+此版本已設定為 GitHub Pages 使用者根網站：
+
+- 前台：https://cronos-2026.github.io/
+- 後台：https://cronos-2026.github.io/admin.html
+- GitHub Owner：cronos-2026
+- Repository：cronos-2026.github.io
+- Branch：main
+- 前台參數檔：tax-config.json
+
+### Token 權限
+Fine-grained personal access token 必須把 Repository access 設為：
+`Only select repositories → cronos-2026.github.io`
+
+Repository permissions：
+`Contents → Read and write`
+
+若 Token 仍只授權舊的 `cronos-2026-tax-calculator`，
+後台同步時會出現 `Resource not accessible by personal access token`。
+
+### 使用方式
+1. 將本 ZIP 內 5 個檔案上傳到 `cronos-2026.github.io` Repository 根目錄。
+2. 開啟 `/admin.html` 登入。
+3. 修改後台參數。
+4. 貼入已授權 `cronos-2026.github.io` 的 Fine-grained Token。
+5. 按「同步更新前台」。
+6. 系統會直接更新 GitHub 的 `tax-config.json`。
+7. GitHub Pages 部署完成後，重新整理前台即可看到新設定。
