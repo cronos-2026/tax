@@ -995,6 +995,92 @@ body.print-compact{zoom:.72;font-size:8.8pt!important}body.print-ultra-compact{z
 body.print-compact input,body.print-compact select{height:22px!important;min-height:22px!important}
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
+
+/* ===== 簡潔視覺優化 v2026.09.v06-3 ===== */
+:root{
+  --ui-bg:#f8fafc;
+  --ui-card:#ffffff;
+  --ui-border:#dbe3ea;
+  --ui-text:#0f172a;
+  --ui-muted:#64748b;
+  --ui-primary:#0f766e;
+  --ui-primary-soft:#ecfdf5;
+  --ui-warn:#b45309;
+  --ui-warn-soft:#fffbeb;
+  --ui-danger:#b91c1c;
+  --ui-danger-soft:#fef2f2;
+}
+body{
+  background:var(--ui-bg)!important;
+  color:var(--ui-text)!important;
+}
+main{
+  max-width:1120px!important;
+  margin:0 auto!important;
+}
+.rounded-xl,.rounded-lg{
+  border-color:var(--ui-border)!important;
+  box-shadow:0 2px 10px rgba(15,23,42,.04)!important;
+}
+h1,h2,h3{
+  letter-spacing:-.01em;
+}
+h1{font-weight:800!important}
+h2,h3{font-weight:700!important}
+.text-slate-500,.text-slate-600{
+  color:var(--ui-muted)!important;
+}
+input,select{
+  border-color:#cbd5e1!important;
+  background:#fff!important;
+}
+input:focus,select:focus{
+  border-color:var(--ui-primary)!important;
+  box-shadow:0 0 0 3px rgba(15,118,110,.08)!important;
+}
+button{
+  transition:.15s ease;
+}
+button:hover{
+  transform:translateY(-1px);
+}
+
+/* 重要注意事項 */
+.notice-important{
+  border:1px solid #f59e0b!important;
+  background:var(--ui-warn-soft)!important;
+  color:#78350f!important;
+}
+.notice-important strong{
+  color:var(--ui-warn)!important;
+}
+.notice-danger{
+  border:1px solid #ef4444!important;
+  background:var(--ui-danger-soft)!important;
+  color:#7f1d1d!important;
+}
+.notice-success{
+  border:1px solid #10b981!important;
+  background:var(--ui-primary-soft)!important;
+  color:#065f46!important;
+}
+
+/* 壓縮垂直空間 */
+section,.rounded-xl,.rounded-lg{
+  scroll-margin-top:16px;
+}
+.space-y-8>:not([hidden])~:not([hidden]){margin-top:1rem!important}
+.space-y-6>:not([hidden])~:not([hidden]){margin-top:.8rem!important}
+.gap-8{gap:1rem!important}
+.gap-6{gap:.8rem!important}
+.p-8{padding:1.1rem!important}
+.p-6{padding:1rem!important}
+
+/* 強化結果與警示辨識 */
+[id*="result"],[class*="result"]{
+  font-variant-numeric:tabular-nums;
+}
+
 </style>
 <style>
         /* 畫面版：加寬內容區並提高可讀性 */
@@ -1061,7 +1147,9 @@ body.print-ultra-compact input,body.print-ultra-compact select{height:20px!impor
         <section class="relative overflow-hidden bg-gradient-to-br from-sky-50 via-slate-50 to-emerald-50 pt-14 pb-8 md:pt-20 md:pb-10">
             <div class="relative mx-auto max-w-7xl px-5">
                 <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">創業節稅試算</h1>
-                <p class="mt-3 text-lg text-slate-600"><span id="pageSubtitle">準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。</span></p>
+                <p class="mt-3 text-lg text-slate-600"><span id="pageSubtitle">準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。<div class="notice-important mt-4 rounded-lg px-4 py-3 text-sm leading-6">
+<strong>重點提醒：</strong>本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。
+</div></span></p>
             </div>
         </section>
 
@@ -1268,7 +1356,7 @@ body.print-ultra-compact input,body.print-ultra-compact select{height:20px!impor
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © v2026.09.v06-2
+            © v2026.09.v06-3
         </div>
     </footer>
 
@@ -1279,7 +1367,7 @@ const DEFAULT_TAX_CONFIG = {
     pageTitle: "創業節稅試算",
     pageSubtitle: "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
     taxYear: 115,
-    siteVersion: "v2026.09.v06-2",
+    siteVersion: "v2026.09.v06-3",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1380,7 +1468,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || 'v2026.09.v06-2';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || 'v2026.09.v06-3';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -1459,8 +1547,8 @@ function renderOptionalDeductionFields(){
   box.innerHTML='';
   if(active.some(([key])=>DEPENDENT_LIMITED_DEDUCTIONS.some(([k])=>k===key))){
     const note=document.createElement('div');
-    note.className='md:col-span-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600';
-    note.textContent='扶養資格採簡化試算：各項人數分別不得超過扶養人數；達到上限後欄位會鎖定，如需再增加，請先提高扶養人數。不同資格之間不互斥，也不將人數相加比較。';
+    note.className='notice-important md:col-span-2 rounded-md px-3 py-2 text-sm';
+    note.textContent='<strong>注意：</strong>扶養資格採簡化試算：各項人數分別不得超過扶養人數；達到上限後欄位會鎖定，如需再增加，請先提高扶養人數。不同資格之間不互斥，也不將人數相加比較。';
     box.appendChild(note);
   }
 
