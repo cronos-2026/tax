@@ -989,14 +989,17 @@ main,.container,.max-w-7xl,.max-w-6xl,.max-w-5xl,.max-w-4xl,.max-w-3xl,.max-w-2x
 h1{font-size:16pt!important;margin:0 0 3px!important}h2{font-size:12pt!important;margin:3px 0!important}h3{font-size:10.5pt!important;margin:2px 0!important}p{margin:1px 0!important}
 input,select{min-height:24px!important;height:24px!important;padding-top:1px!important;padding-bottom:1px!important;font-size:9pt!important;border-width:1px!important}
 table{width:100%!important;border-collapse:collapse!important;font-size:8.7pt!important}th,td{padding:3px 4px!important;line-height:1.15!important}
-table,tr,.rounded-lg,.rounded-xl{break-inside:avoid;page-break-inside:avoid}h1,h2,h3{break-after:avoid;page-break-after:avoid}
+tr{break-inside:avoid;page-break-inside:avoid}
+thead{display:table-header-group}
+tfoot{display:table-footer-group}
+.rounded-lg,.rounded-xl{break-inside:auto!important;page-break-inside:auto!important}h1,h2,h3{break-after:avoid;page-break-after:avoid}
 footer{margin-top:4px!important;padding-top:3px!important;font-size:7.5pt!important}
 body.print-compact{zoom:.72;font-size:8.8pt!important}body.print-ultra-compact{zoom:.64;font-size:8.2pt!important}
 body.print-compact input,body.print-compact select{height:22px!important;min-height:22px!important}
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
 
-/* ===== 簡潔視覺優化 v2026.09.v06-3 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-11 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1079,6 +1082,330 @@ section,.rounded-xl,.rounded-lg{
 /* 強化結果與警示辨識 */
 [id*="result"],[class*="result"]{
   font-variant-numeric:tabular-nums;
+}
+
+
+.notice-important strong{
+  font-weight:800!important;
+  color:#92400e!important;
+  margin-right:.2rem;
+}
+
+
+/* ===== 列印分頁修正：大型卡片允許自然跨頁 ===== */
+@media print {
+  main, section, .rounded-lg, .rounded-xl {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* 僅保護真正不適合被切開的小單位 */
+  tr, h1, h2, h3, label {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  thead { display: table-header-group; }
+  tfoot { display: table-footer-group; }
+
+  /* 避免標題區自己佔一頁 */
+  header {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* 不強制整張表格不可跨頁，否則大型表格會整塊被推到下一頁 */
+  table {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+}
+
+
+/* ===== 列印 1～2 頁強化版：統一接管列印版面 ===== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 5mm 6mm;
+  }
+
+  html, body {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    font-size: 8.5pt !important;
+    line-height: 1.12 !important;
+    zoom: 1 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 列印時完全移除無用的空白導覽列與操作按鈕 */
+  header,
+  .no-print,
+  #save-status,
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  main {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 頂部標題壓成精簡摘要列，不再占大面積 */
+  main > section:first-of-type {
+    padding: 4mm 3mm 2.5mm !important;
+    margin: 0 0 2mm !important;
+    min-height: 0 !important;
+    background: #f8fafc !important;
+    overflow: visible !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  main > section:first-of-type > div {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  main > section:first-of-type h1 {
+    font-size: 15pt !important;
+    line-height: 1.05 !important;
+    margin: 0 0 1mm !important;
+  }
+
+  main > section:first-of-type p {
+    font-size: 7.7pt !important;
+    line-height: 1.1 !important;
+    margin: 0 !important;
+  }
+
+  .notice-important {
+    margin-top: 1.5mm !important;
+    padding: 1.5mm 2mm !important;
+    border-width: .6pt !important;
+    border-radius: 3px !important;
+    font-size: 7.3pt !important;
+    line-height: 1.1 !important;
+  }
+
+  /* 主內容採左右兩欄：左輸入、右結果，最大幅降低頁數 */
+  main > section:nth-of-type(2) {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main > section:nth-of-type(2) > .grid {
+    display: grid !important;
+    grid-template-columns: 39% 61% !important;
+    gap: 3mm !important;
+    align-items: start !important;
+    width: 100% !important;
+  }
+
+  main > section:nth-of-type(2) > .grid > div {
+    grid-column: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 3mm !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* 取消舊版所有「整張卡片不得跨頁」規則 */
+  .rounded-2xl,
+  .rounded-xl,
+  .rounded-lg,
+  section,
+  table {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* 表單大幅壓縮垂直高度 */
+  .gap-8, .gap-6, .gap-5, .gap-4, .gap-2\.5, .gap-2 {
+    gap: 1.5mm !important;
+  }
+
+  .space-y-8 > :not([hidden]) ~ :not([hidden]),
+  .space-y-6 > :not([hidden]) ~ :not([hidden]),
+  .space-y-5 > :not([hidden]) ~ :not([hidden]),
+  .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1.5mm !important;
+  }
+
+  .p-8,.p-6,.p-5,.p-4,.p-3 {
+    padding: 1.5mm !important;
+  }
+
+  .pt-5,.pt-4,.pt-3 {
+    padding-top: 1.5mm !important;
+  }
+
+  .mt-6,.mt-5,.mt-4,.mt-3,.mt-2,.mt-1,
+  .mb-6,.mb-5,.mb-4,.mb-3,.mb-2,.mb-1 {
+    margin-top: 1mm !important;
+    margin-bottom: 1mm !important;
+  }
+
+  h2, h3, h4 {
+    line-height: 1.05 !important;
+    margin: 0 0 1.5mm !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  h3 { font-size: 10pt !important; }
+  h4 { font-size: 8.8pt !important; }
+
+  label {
+    font-size: 7.8pt !important;
+    line-height: 1.05 !important;
+    margin: 0 !important;
+    break-after: avoid !important;
+  }
+
+  /* 輸入欄位縮成報表尺寸 */
+  input, select {
+    height: 6.2mm !important;
+    min-height: 6.2mm !important;
+    padding: 0 2mm !important;
+    font-size: 7.8pt !important;
+    line-height: 1 !important;
+    border-width: .6pt !important;
+    box-shadow: none !important;
+  }
+
+  /* 非必要輔助說明在列印時弱化/隱藏，保留核心警語 */
+  .text-xs {
+    font-size: 6.5pt !important;
+    line-height: 1.05 !important;
+  }
+
+  #spouse-salary-hint,
+  #ownership-hint,
+  #personal-tax-standard-note,
+  #optional-deductions-section > p,
+  .money-input + span {
+    display: none !important;
+  }
+
+  /* 計算按鈕列印不需要 */
+  #calc-btn {
+    display: none !important;
+  }
+
+  /* 結果表格採高密度報表版 */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: fixed !important;
+    font-size: 7.5pt !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  th, td {
+    height: auto !important;
+    padding: 1.2mm 1.3mm !important;
+    line-height: 1.08 !important;
+    vertical-align: top !important;
+    word-break: break-word !important;
+  }
+
+  th:first-child, td:first-child { width: 31% !important; }
+  th:nth-child(2), td:nth-child(2) { width: 34.5% !important; }
+  th:nth-child(3), td:nth-child(3) { width: 34.5% !important; }
+
+  .result-detail,
+  .tax-total-detail {
+    margin-top: .7mm !important;
+    font-size: 6.4pt !important;
+    line-height: 1.05 !important;
+  }
+
+  /* footer 緊貼內容，不另占一頁 */
+  footer {
+    margin: 2mm 0 0 !important;
+    padding: 1mm 0 0 !important;
+    min-height: 0 !important;
+    font-size: 6.5pt !important;
+    break-before: avoid !important;
+    page-break-before: avoid !important;
+  }
+
+  /* 禁止舊 adaptive zoom 再把整頁縮得過小 */
+  body.print-compact,
+  body.print-ultra-compact {
+    zoom: 1 !important;
+    font-size: 8.5pt !important;
+  }
+}
+
+
+/* ===== 智慧列印分頁：一頁優先，不適合才依兩大標題切兩頁 ===== */
+@media print {
+  /* 一頁模式：沿用左右雙欄 */
+  .print-basic-section,
+  .print-result-section {
+    break-before: auto !important;
+    page-break-before: auto !important;
+  }
+
+  /* 二頁模式：第 1 頁基礎資料，第 2 頁從試算比較表抬頭開始 */
+  body.print-two-pages main > section:nth-of-type(2) > .grid {
+    display: block !important;
+  }
+
+  body.print-two-pages .print-basic-section {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 3mm !important;
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  body.print-two-pages .print-result-section {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 3mm !important;
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  body.print-two-pages .print-result-section > h3 {
+    display: block !important;
+    margin: 0 0 2mm !important;
+    padding: 0 !important;
+    font-size: 12pt !important;
+    line-height: 1.1 !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* 防止雙重分頁 */
+  body.print-two-pages .print-basic-section + .print-result-section {
+    page-break-before: auto !important;
+  }
 }
 
 </style>
@@ -1253,13 +1580,21 @@ section,.rounded-xl,.rounded-lg{
                         </div>
 
                         <button id="calc-btn" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors bg-slate-900 text-white shadow hover:bg-slate-800 h-11 rounded-md px-8 w-full cursor-pointer">立即計算比較</button>
-                        <div class="mt-3 flex flex-wrap gap-2 justify-center no-print">
-                            <button id="save-data-btn" type="button" class="px-4 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">💾 儲存目前資料</button>
-                            <button id="load-data-btn" type="button" class="px-4 py-2 rounded-md border border-sky-200 bg-white text-sky-700 hover:bg-sky-50">📂 開啟儲存資料</button>
-                            <button id="reset-data-btn" type="button" class="px-4 py-2 rounded-md border border-amber-200 bg-white text-amber-700 hover:bg-amber-50">↺ 歸零</button>
-                            <button id="clear-data-btn" type="button" class="px-4 py-2 rounded-md border border-red-200 bg-white text-red-600 hover:bg-red-50">🗑️ 清除儲存資料</button>
-                            <button id="print-btn" type="button" class="px-4 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">🖨️ 列印本頁</button>
-                            <span id="save-status" class="text-sm text-slate-500 self-center"></span>
+                        <div class="mt-3 no-print space-y-2">
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                <button id="save-data-btn" type="button" class="px-4 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">💾 儲存目前資料</button>
+                                <button id="load-data-btn" type="button" class="px-4 py-2 rounded-md border border-sky-200 bg-white text-sky-700 hover:bg-sky-50">📂 開啟儲存資料</button>
+                            </div>
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                <button id="reset-data-btn" type="button" class="px-4 py-2 rounded-md border border-amber-200 bg-white text-amber-700 hover:bg-amber-50">↺ 歸零</button>
+                                <button id="clear-data-btn" type="button" class="px-4 py-2 rounded-md border border-red-200 bg-white text-red-600 hover:bg-red-50">🗑️ 清除儲存資料</button>
+                            </div>
+                            <div class="flex justify-center">
+                                <button id="print-btn" type="button" class="px-5 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">🖨️ 列印本頁</button>
+                            </div>
+                            <div class="flex justify-center">
+                                <span id="save-status" class="text-sm text-slate-500 self-center"></span>
+                            </div>
                         </div>
                         <p class="text-sm text-slate-500 text-center">以 115 年度 (2026) 稅率、免稅額及扣除額基礎計算</p>
                     </div>
@@ -1356,7 +1691,7 @@ section,.rounded-xl,.rounded-lg{
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © v2026.09.v06-3
+            © 2026.09.v06-11
         </div>
     </footer>
 
@@ -1367,7 +1702,7 @@ const DEFAULT_TAX_CONFIG = {
     pageTitle: "創業節稅試算",
     pageSubtitle: "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
     taxYear: 115,
-    siteVersion: "v2026.09.v06-3",
+    siteVersion: "2026.09.v06-11",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1468,7 +1803,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || 'v2026.09.v06-3';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-11';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -1548,7 +1883,7 @@ function renderOptionalDeductionFields(){
   if(active.some(([key])=>DEPENDENT_LIMITED_DEDUCTIONS.some(([k])=>k===key))){
     const note=document.createElement('div');
     note.className='notice-important md:col-span-2 rounded-md px-3 py-2 text-sm';
-    note.textContent='<strong>注意：</strong>扶養資格採簡化試算：各項人數分別不得超過扶養人數；達到上限後欄位會鎖定，如需再增加，請先提高扶養人數。不同資格之間不互斥，也不將人數相加比較。';
+    note.innerHTML='<strong>注意：</strong> 扶養資格採簡化試算：各項人數分別不得超過扶養人數；達到上限後欄位會鎖定，如需再增加，請先提高扶養人數。不同資格之間不互斥，也不將人數相加比較。';
     box.appendChild(note);
   }
 
@@ -2266,20 +2601,14 @@ document.getElementById('res-rate-so').innerText =
         }
 
         function clearUserData() {
-            if (!confirm('確定要刪除全部已儲存資料，並將目前輸入數字歸零嗎？')) return;
+            if (!confirm('確定要刪除全部已儲存資料嗎？\n目前畫面的輸入數字及試算結果會保留。')) return;
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem(STORAGE_LIST_KEY);
-            ['salary-self','salary-spouse','dividend','revenue'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0';}); document.querySelectorAll('#optional-deductions-fields input').forEach(el=>{if(el.type==='checkbox'||el.type==='radio')el.checked=false;else el.value='0';});
-            const dep=document.getElementById('dependents'); if(dep) dep.value='0';
-            const margin=document.getElementById('margin'); if(margin) margin.value='0';
-            const marital=document.getElementById('marital'); if(marital) marital.value='single';
-            const businessType=document.getElementById('business-type'); if(businessType) businessType.value='sole';
-            const companyOwnership=document.getElementById('company-ownership'); if(companyOwnership) companyOwnership.value='100';
-            updateSpouseSalaryState();
-            updateBusinessShareState();
-            document.querySelectorAll('.money-input').forEach(formatInput);
-            resetResults();
-            const s=document.getElementById('save-status');if(s){s.textContent='已清除全部儲存資料；輸入值及結果已歸零';setTimeout(()=>s.textContent='',3000);}
+            const status=document.getElementById('save-status');
+            if(status){
+                status.textContent='已清除全部儲存資料（目前畫面資料保留）';
+                setTimeout(()=>status.textContent='',3000);
+            }
         }
 
         document.getElementById('save-data-btn').addEventListener('click', () => saveUserData(true));
@@ -2318,14 +2647,50 @@ window.onload = async () => {
 (function(){
 function prepareAdaptivePrint(){
 document.body.classList.remove('print-compact','print-ultra-compact');
-const h=Math.max(document.documentElement.scrollHeight||0,document.body.scrollHeight||0);
-if(h>2350)document.body.classList.add('print-ultra-compact');
-else if(h>1750)document.body.classList.add('print-compact');
 }
 window.addEventListener('beforeprint',prepareAdaptivePrint);
 window.addEventListener('afterprint',()=>document.body.classList.remove('print-compact','print-ultra-compact'));
 })();
 </script>
+
+<script>
+(function(){
+  function findCardByHeading(text){
+    const heading=Array.from(document.querySelectorAll('h1,h2,h3,h4'))
+      .find(el=>(el.textContent||'').trim()===text);
+    return heading ? heading.closest('.rounded-2xl,.rounded-xl,.rounded-lg,section') : null;
+  }
+
+  function prepareSmartPrintPages(){
+    const basic=findCardByHeading('基礎資料設定');
+    const result=findCardByHeading('稅額試算比較表');
+
+    if(basic) basic.classList.add('print-basic-section');
+    if(result) result.classList.add('print-result-section');
+
+    document.body.classList.remove('print-two-pages');
+
+    /*
+      優先一頁：
+      若兩個主要區塊以列印雙欄配置後仍屬合理高度，就維持同頁。
+      內容較多時才切成兩頁，且第 2 頁一定從「稅額試算比較表」標題開始。
+    */
+    const basicHeight=basic ? basic.scrollHeight : 0;
+    const resultHeight=result ? result.scrollHeight : 0;
+    const optionalCount=document.querySelectorAll('#optional-deductions-fields input,#optional-deductions-fields select').length;
+
+    if(basicHeight>1500 || resultHeight>1500 || optionalCount>8){
+      document.body.classList.add('print-two-pages');
+    }
+  }
+
+  window.addEventListener('beforeprint',prepareSmartPrintPages);
+  window.addEventListener('afterprint',function(){
+    document.body.classList.remove('print-two-pages');
+  });
+})();
+</script>
+
 </body>
 </html>
 
