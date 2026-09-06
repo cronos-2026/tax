@@ -976,6 +976,25 @@
   }
 }
 
+@media print{
+@page{size:A4 portrait;margin:7mm 8mm}
+html,body{width:100%!important;margin:0!important;padding:0!important;background:#fff!important;font-size:9.5pt!important;line-height:1.18!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{zoom:.80} button,#save-status,[role="dialog"]{display:none!important}
+main,.container,.max-w-7xl,.max-w-6xl,.max-w-5xl,.max-w-4xl,.max-w-3xl,.max-w-2xl,.max-w-xl{width:100%!important;max-width:none!important;margin:0!important;padding-left:0!important;padding-right:0!important}
+.p-8{padding:9px!important}.p-6{padding:7px!important}.p-5{padding:6px!important}.p-4{padding:5px!important}
+.py-8,.py-6,.py-5,.py-4{padding-top:5px!important;padding-bottom:5px!important}
+.px-8,.px-6,.px-5,.px-4{padding-left:5px!important;padding-right:5px!important}
+.gap-8,.gap-6,.gap-5,.gap-4{gap:5px!important}
+.space-y-8>:not([hidden])~:not([hidden]),.space-y-6>:not([hidden])~:not([hidden]),.space-y-5>:not([hidden])~:not([hidden]),.space-y-4>:not([hidden])~:not([hidden]){margin-top:5px!important}
+h1{font-size:16pt!important;margin:0 0 3px!important}h2{font-size:12pt!important;margin:3px 0!important}h3{font-size:10.5pt!important;margin:2px 0!important}p{margin:1px 0!important}
+input,select{min-height:24px!important;height:24px!important;padding-top:1px!important;padding-bottom:1px!important;font-size:9pt!important;border-width:1px!important}
+table{width:100%!important;border-collapse:collapse!important;font-size:8.7pt!important}th,td{padding:3px 4px!important;line-height:1.15!important}
+table,tr,.rounded-lg,.rounded-xl{break-inside:avoid;page-break-inside:avoid}h1,h2,h3{break-after:avoid;page-break-after:avoid}
+footer{margin-top:4px!important;padding-top:3px!important;font-size:7.5pt!important}
+body.print-compact{zoom:.72;font-size:8.8pt!important}body.print-ultra-compact{zoom:.64;font-size:8.2pt!important}
+body.print-compact input,body.print-compact select{height:22px!important;min-height:22px!important}
+body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
+}
 </style>
 <style>
         /* 畫面版：加寬內容區並提高可讀性 */
@@ -1032,7 +1051,7 @@
         <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5">
             <div class="flex items-center gap-2">
                 <span class="text-xl font-bold tracking-tight text-slate-900"></span>
-                <span class="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">v2026.09</span>
+                <span class="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">v2026.09.v06</span>
             </div>
         </div>
     </header>
@@ -1260,7 +1279,7 @@ const DEFAULT_TAX_CONFIG = {
     pageTitle: "創業節稅試算",
     pageSubtitle: "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
     taxYear: 115,
-    siteVersion: "v2026.09",
+    siteVersion: "v2026.09.v06",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1361,7 +1380,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || 'v2026.09';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || 'v2026.09.v06';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -2207,6 +2226,18 @@ window.onload = async () => {
             updateBusinessShareState();
         };
     </script>
+<script>
+(function(){
+function prepareAdaptivePrint(){
+document.body.classList.remove('print-compact','print-ultra-compact');
+const h=Math.max(document.documentElement.scrollHeight||0,document.body.scrollHeight||0);
+if(h>2350)document.body.classList.add('print-ultra-compact');
+else if(h>1750)document.body.classList.add('print-compact');
+}
+window.addEventListener('beforeprint',prepareAdaptivePrint);
+window.addEventListener('afterprint',()=>document.body.classList.remove('print-compact','print-ultra-compact'));
+})();
+</script>
 </body>
 </html>
 

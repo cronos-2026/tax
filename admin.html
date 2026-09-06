@@ -15,7 +15,7 @@
     <div class="top">
       <div>
         <h1>稅務參數後台管理</h1>
-        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">v2026.09</strong>　｜　GitHub 同步優化版</div>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">v2026.09.v06</strong>　｜　GitHub 同步優化版</div>
       </div>
       <button class="btn logout" id="logoutBtn">登出</button>
     </div>
@@ -72,7 +72,17 @@
     <div class="card"><h2>前台計算項目啟用設定</h2>
       <p class="muted" style="line-height:1.7">
         此區不是新增自訂名稱。請從上方既有的免稅額／扣除額項目選擇是否啟用。
-        <strong>勾選「啟用」後，前台會自動新增對應欄位，並同步納入綜合所得稅計算。</strong>
+        <strong>勾選「啟用」後，前台會自動新增對應欄位，並同步納入綜合所得稅計算。
+<div class="mt-3 flex flex-wrap gap-2">
+  <button id="enable-all-deductions-btn" type="button"
+    class="px-3 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">
+    全選
+  </button>
+  <button id="disable-all-deductions-btn" type="button"
+    class="px-3 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">
+    取消全選
+  </button>
+</div></strong>
       </p>
       <table class="table">
         <thead><tr><th>項目</th><th>年度設定值</th><th>前台新增＋加入計算</th><th>前台處理方式</th></tr></thead>
@@ -485,4 +495,46 @@ document.getElementById('importFile').onchange=async e=>{
   }
 };
 showLogin();
-</script></body></html>
+</script>
+<script>
+(function(){
+  function getFrontItemEnableCheckboxes(){
+    const heading = Array.from(document.querySelectorAll('h1,h2,h3,h4,legend,div'))
+      .find(el => (el.textContent || '').trim().includes('前台計算項目啟用設定'));
+    if(!heading) return [];
+
+    let root = heading.closest('section, .card, .rounded-xl, .rounded-lg, .border') || heading.parentElement;
+    if(!root) return [];
+
+    return Array.from(root.querySelectorAll('input[type="checkbox"]')).filter(cb => {
+      if(cb.disabled) return false;
+      const label = cb.closest('label');
+      const txt = ((label && label.textContent) || cb.parentElement?.textContent || '').trim();
+      const id = (cb.id || '').toLowerCase();
+      const name = (cb.name || '').toLowerCase();
+      return txt.includes('啟用') || id.includes('enable') || name.includes('enable');
+    });
+  }
+
+  function setAllFrontItems(enabled){
+    const boxes = getFrontItemEnableCheckboxes();
+    boxes.forEach(cb => {
+      if(cb.checked !== enabled){
+        cb.checked = enabled;
+        cb.dispatchEvent(new Event('change', {bubbles:true}));
+        cb.dispatchEvent(new Event('input', {bubbles:true}));
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const allBtn = document.getElementById('enable-all-deductions-btn');
+    const noneBtn = document.getElementById('disable-all-deductions-btn');
+
+    if(allBtn) allBtn.addEventListener('click', () => setAllFrontItems(true));
+    if(noneBtn) noneBtn.addEventListener('click', () => setAllFrontItems(false));
+  });
+})();
+</script>
+
+</body></html>
