@@ -999,7 +999,7 @@ body.print-compact input,body.print-compact select{height:22px!important;min-hei
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
 
-/* ===== 簡潔視覺優化 2026.09.v06-17 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-18 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1409,7 +1409,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 列印空白尾頁修正 2026.09.v06-17 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v06-18 ===== */
 @media print {
   /* 螢幕版底部說明不另外占列印頁面；列印結果已有年度資訊 */
   #print-footer-note,
@@ -1457,7 +1457,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 取消頂部固定 2026.09.v06-17 ===== */
+/* ===== 取消頂部固定 2026.09.v06-18 ===== */
 header,
 main > section:first-of-type,
 .sticky,
@@ -1754,7 +1754,7 @@ main > section:first-of-type {
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-17
+            © 2026.09.v06-18
         </div>
     </footer>
 
@@ -1767,7 +1767,7 @@ const DEFAULT_TAX_CONFIG = {
     pageNotice: "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
     showHeaderSection: true,
     taxYear: 115,
-    siteVersion: "2026.09.v06-17",
+    siteVersion: "2026.09.v06-18",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1874,7 +1874,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-17';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-18';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;

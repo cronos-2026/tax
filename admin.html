@@ -18,6 +18,43 @@
   border-bottom:2px solid #cbd5e1;
 }
 
+
+/* ===== 後台上方標題區編輯顯示修正 ===== */
+.header-toggle-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:auto!important;
+  cursor:pointer;
+}
+.header-toggle-row input[type="checkbox"]{
+  width:18px!important;
+  min-width:18px!important;
+  height:18px!important;
+  margin:0!important;
+  flex:0 0 18px!important;
+}
+.header-toggle-row span{
+  display:inline!important;
+  white-space:nowrap;
+}
+.header-editor-grid{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:14px!important;
+}
+.header-editor-grid .field:last-child{
+  grid-column:1/-1!important;
+}
+@media(max-width:760px){
+  .header-editor-grid{
+    grid-template-columns:1fr!important;
+  }
+  .header-editor-grid .field:last-child{
+    grid-column:auto!important;
+  }
+}
+
 </style></head><body>
 <div class="wrap">
   <div id="loginView" class="card login-card">
@@ -32,37 +69,45 @@
     <div class="top">
       <div>
         <h1>稅務參數後台管理</h1>
-        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v06-17</strong>　｜　GitHub 同步優化版</div>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v06-18</strong>　｜　GitHub 同步優化版</div>
       </div>
       <button class="btn logout" id="logoutBtn">登出</button>
     </div>
 
     <div class="card"><h2>前台上方標題區編輯</h2>
-      <div class="field" style="margin-bottom:14px">
-        <label style="display:flex;align-items:center;gap:10px;font-weight:800">
+      <div class="field" style="margin-bottom:16px">
+        <label class="header-toggle-row">
           <input data-key="showHeaderSection" type="checkbox">
-          顯示上方標題區
+          <span>顯示上方標題區</span>
         </label>
         <div class="muted" style="margin-top:6px;line-height:1.6">
-          取消勾選後，前台會完整隱藏上方主標題、副標題與重點提醒區塊。
+          取消勾選後，前台會完整隱藏主標題、副標題與重點提醒；重新勾選即可恢復。
         </div>
       </div>
-      <div class="grid">
+
+      <div class="header-editor-grid">
         <div class="field">
           <label>主標題</label>
-          <input data-key="pageTitle" type="text" placeholder="創業節稅試算">
+          <input data-key="pageTitle" type="text" placeholder="例：創業節稅試算">
         </div>
+
         <div class="field">
           <label>副標題／說明文字</label>
           <textarea data-key="pageSubtitle" rows="3" placeholder="請輸入前台副標題或說明文字"></textarea>
         </div>
-        <div class="field" style="grid-column:1/-1">
+
+        <div class="field">
           <label>重點提醒文字</label>
           <textarea data-key="pageNotice" rows="3" placeholder="請輸入前台上方提醒文字；留空則不顯示提醒區塊"></textarea>
-          <div class="muted" style="margin-top:6px">留空時，前台上方黃色「重點提醒」區塊會自動隱藏。</div>
+          <div class="muted" style="margin-top:6px">
+            留空時，前台黃色「重點提醒」區塊會自動隱藏。
+          </div>
         </div>
       </div>
-      <div class="muted" style="margin-top:8px;line-height:1.6">這裡修改後，透過下方 GitHub 同步或更新 <code>tax-config.json</code>，前台上方標題區會同步變更。</div>
+
+      <div class="muted" style="margin-top:10px;line-height:1.6">
+        修改後可透過下方 GitHub 同步更新 <code>tax-config.json</code>，前台即會同步套用。
+      </div>
     </div>
 
     <div class="card"><h2>年度參數讀取與更新</h2>
@@ -317,14 +362,22 @@ function render(){
   if(og) og.innerHTML=FIELDS.other.map(x=>fieldHtml(...x)).join('');
 
   document.querySelectorAll('[data-key]').forEach(el=>{
-    el.value=cfg[el.dataset.key]??'';
-    el.oninput=()=>{
-      cfg[el.dataset.key]=el.type==='number'?Number(el.value):el.value;
-      if(el.dataset.key==='taxYear'){
-        updatePresetButton();
-        syncSourceLinkBySelectedYear();
-      }
-    };
+    const key=el.dataset.key;
+    if(el.type==='checkbox'){
+      el.checked=cfg[key]!==false;
+      el.onchange=()=>{
+        cfg[key]=el.checked;
+      };
+    }else{
+      el.value=cfg[key]??'';
+      el.oninput=()=>{
+        cfg[key]=el.type==='number'?Number(el.value):el.value;
+        if(key==='taxYear'){
+          updatePresetButton();
+          syncSourceLinkBySelectedYear();
+        }
+      };
+    }
   });
 
   updatePresetButton();
