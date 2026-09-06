@@ -999,7 +999,7 @@ body.print-compact input,body.print-compact select{height:22px!important;min-hei
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
 
-/* ===== 簡潔視覺優化 2026.09.v06-31 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-33 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1409,7 +1409,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 列印空白尾頁修正 2026.09.v06-31 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v06-33 ===== */
 @media print {
   /* 螢幕版底部說明不另外占列印頁面；列印結果已有年度資訊 */
   #print-footer-note,
@@ -1457,7 +1457,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 取消頂部固定 2026.09.v06-31 ===== */
+/* ===== 取消頂部固定 2026.09.v06-33 ===== */
 header,
 main > section:first-of-type,
 .sticky,
@@ -1473,7 +1473,7 @@ main > section:first-of-type {
 
 
 
-/* ===== 2026.09.v06-31：移除網址列下方多餘頂部空白 ===== */
+/* ===== 2026.09.v06-33：移除網址列下方多餘頂部空白 ===== */
 html, body {
   margin-top: 0 !important;
   padding-top: 0 !important;
@@ -1506,7 +1506,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-31：後台未啟用額外項目時，不保留空白區塊 ===== */
+/* ===== 2026.09.v06-33：後台未啟用額外項目時，不保留空白區塊 ===== */
 #optional-deductions-section.hidden {
   display: none !important;
   margin: 0 !important;
@@ -1516,7 +1516,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-31 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
+/* ===== 2026.09.v06-33 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
 @media print {
   html, body {
     height: auto !important;
@@ -1585,7 +1585,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-31：列印時「基礎資料設定」雙欄排列 ===== */
+/* ===== 2026.09.v06-33：列印時「基礎資料設定」雙欄排列 ===== */
 @media print {
   #basic-data-print-grid {
     display: grid !important;
@@ -1622,7 +1622,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-31：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
+/* ===== 2026.09.v06-33：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
 @media print {
   /* 基本列印狀態：不強制雙欄 */
   #basic-data-print-grid {
@@ -1854,6 +1854,288 @@ body > .page-root {
             footer { padding-top:4px !important; padding-bottom:0 !important; }
             table, tr, .rounded-2xl, .rounded-xl, .rounded-lg { break-inside:avoid !important; page-break-inside:avoid !important; }
         }
+
+
+/* ===== 2026.09.v06-33：Chrome / Edge 跨瀏覽器列印穩定修正 ===== */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 5mm;
+  }
+
+  html,
+  body,
+  main {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* 標題只保留必要高度，不允許自己形成一頁 */
+  #top-title-section {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 0 2mm !important;
+    padding: 2mm 3mm !important;
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  #top-title-section > div {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+  }
+
+  #top-title-section h1 {
+    margin: 0 0 1mm !important;
+    font-size: 15pt !important;
+    line-height: 1.05 !important;
+  }
+
+  #top-title-section p,
+  #top-title-section .notice-important {
+    margin-top: 1mm !important;
+    margin-bottom: 0 !important;
+    padding-top: 1mm !important;
+    padding-bottom: 1mm !important;
+    line-height: 1.08 !important;
+  }
+
+  /* 關鍵修正：
+     舊版曾對 rounded-2xl / 卡片設 break-inside:avoid，
+     Chrome 會因此把整張「基礎資料設定」推到下一頁，造成第1頁大片空白。 */
+  .rounded-2xl,
+  .rounded-xl,
+  .rounded-lg,
+  .print-basic-section,
+  .print-result-section,
+  main > section:nth-of-type(2),
+  main > section:nth-of-type(2) > .grid,
+  main > section:nth-of-type(2) > .grid > div {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  main > section:nth-of-type(2) {
+    break-before: auto !important;
+    page-break-before: auto !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* 一頁模式：兩大區塊允許在同一頁 */
+  body:not(.print-force-basic-two-columns) .print-basic-section,
+  body:not(.print-force-basic-two-columns) .print-result-section {
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  /* 超出二頁時：
+     第一頁 = 標題 + 基礎資料設定
+     第二頁 = 稅額試算比較表
+     只在「結果區」設換頁，避免 basic 的 break-after + result 的 break-before 雙重分頁。 */
+  body.print-force-basic-two-columns .print-basic-section {
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  body.print-force-basic-two-columns .print-result-section {
+    break-before: page !important;
+    page-break-before: always !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  /* 預估超出二頁時，基礎資料雙欄並自動縮小間距 */
+  body.print-force-basic-two-columns #basic-data-print-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    column-gap: 4mm !important;
+    row-gap: 1.2mm !important;
+    align-items: start !important;
+  }
+
+  body.print-force-basic-two-columns #basic-data-print-grid > * {
+    min-width: 0 !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  body.print-force-basic-two-columns .print-basic-section {
+    padding: 2mm !important;
+    font-size: 8pt !important;
+    line-height: 1.05 !important;
+  }
+
+  body.print-force-basic-two-columns .print-basic-section .gap-8,
+  body.print-force-basic-two-columns .print-basic-section .gap-6,
+  body.print-force-basic-two-columns .print-basic-section .gap-5,
+  body.print-force-basic-two-columns .print-basic-section .gap-4,
+  body.print-force-basic-two-columns .print-basic-section .gap-3,
+  body.print-force-basic-two-columns .print-basic-section .gap-2\.5,
+  body.print-force-basic-two-columns .print-basic-section .gap-2 {
+    gap: 1.5px !important;
+  }
+
+  body.print-force-basic-two-columns .print-basic-section input,
+  body.print-force-basic-two-columns .print-basic-section select {
+    height: 20px !important;
+    min-height: 20px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 7.8pt !important;
+  }
+
+  body.print-force-basic-two-columns .print-basic-section label {
+    font-size: 7.8pt !important;
+    line-height: 1.03 !important;
+  }
+
+  body.print-force-basic-two-columns .print-basic-section p,
+  body.print-force-basic-two-columns .print-basic-section .text-xs,
+  body.print-force-basic-two-columns .print-basic-section .text-sm {
+    margin-top: 1px !important;
+    margin-bottom: 1px !important;
+    font-size: 6.8pt !important;
+    line-height: 1.03 !important;
+  }
+
+  /* 保護小單位即可，不再保護整張卡片 */
+  tr,
+  label,
+  .flex.flex-col.gap-2\.5,
+  .education-deduction-group,
+  .preschool-deduction-group {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  footer,
+  #print-footer-note {
+    display: none !important;
+  }
+}
+
+
+
+/* ===== 2026.09.v06-33：兩頁內自然排版，超過兩頁才啟用雙欄 ===== */
+@media print {
+  /* 預設模式：1～2頁內完全自然排版 */
+  body:not(.print-force-basic-two-columns) .print-basic-section,
+  body:not(.print-force-basic-two-columns) .print-result-section {
+    display: block !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  body:not(.print-force-basic-two-columns) #basic-data-print-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  /* 只有預估超過2頁時才啟用 */
+  body.print-force-basic-two-columns .print-basic-section {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  body.print-force-basic-two-columns #basic-data-print-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    column-gap: 4mm !important;
+    row-gap: 1.2mm !important;
+    align-items: start !important;
+  }
+
+  /* 基礎資料雙欄後，結果區才從下一頁開始 */
+  body.print-force-basic-two-columns .print-result-section {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /* 第一級自動縮距 */
+  body.print-force-basic-two-columns .print-basic-section {
+    padding: 2mm !important;
+  }
+
+  body.print-force-basic-two-columns .print-basic-section .gap-8,
+  body.print-force-basic-two-columns .print-basic-section .gap-6,
+  body.print-force-basic-two-columns .print-basic-section .gap-5,
+  body.print-force-basic-two-columns .print-basic-section .gap-4,
+  body.print-force-basic-two-columns .print-basic-section .gap-3,
+  body.print-force-basic-two-columns .print-basic-section .gap-2\.5,
+  body.print-force-basic-two-columns .print-basic-section .gap-2 {
+    gap: 1.5px !important;
+  }
+
+  body.print-force-basic-two-columns .print-basic-section .mt-6,
+  body.print-force-basic-two-columns .print-basic-section .mt-5,
+  body.print-force-basic-two-columns .print-basic-section .mt-4,
+  body.print-force-basic-two-columns .print-basic-section .mt-3,
+  body.print-force-basic-two-columns .print-basic-section .mb-6,
+  body.print-force-basic-two-columns .print-basic-section .mb-5,
+  body.print-force-basic-two-columns .print-basic-section .mb-4,
+  body.print-force-basic-two-columns .print-basic-section .mb-3 {
+    margin-top: 1px !important;
+    margin-bottom: 1px !important;
+  }
+
+  /* 第二級緊湊：若雙欄後仍過高再自動縮 */
+  body.print-force-basic-two-columns.print-basic-extra-tight #basic-data-print-grid {
+    column-gap: 3mm !important;
+    row-gap: .8mm !important;
+  }
+
+  body.print-force-basic-two-columns.print-basic-extra-tight .print-basic-section {
+    padding: 1.2mm !important;
+    font-size: 7.4pt !important;
+    line-height: 1 !important;
+  }
+
+  body.print-force-basic-two-columns.print-basic-extra-tight .print-basic-section input,
+  body.print-force-basic-two-columns.print-basic-extra-tight .print-basic-section select {
+    height: 18px !important;
+    min-height: 18px !important;
+    font-size: 7.2pt !important;
+  }
+
+  body.print-force-basic-two-columns.print-basic-extra-tight .print-basic-section label {
+    font-size: 7.2pt !important;
+  }
+
+  body.print-force-basic-two-columns.print-basic-extra-tight .print-basic-section p,
+  body.print-force-basic-two-columns.print-basic-extra-tight .print-basic-section .text-xs,
+  body.print-force-basic-two-columns.print-basic-extra-tight .print-basic-section .text-sm {
+    font-size: 6.3pt !important;
+    line-height: 1 !important;
+  }
+}
+
 </style>
 </head>
 <body class="flex min-h-screen flex-col bg-white font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
@@ -2079,7 +2361,7 @@ body > .page-root {
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-31
+            © 2026.09.v06-33
         </div>
     </footer>
 
@@ -2092,7 +2374,7 @@ const DEFAULT_TAX_CONFIG = {
     pageNotice: "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
     showHeaderSection: true,
     taxYear: 115,
-    siteVersion: "2026.09.v06-31",
+    siteVersion: "2026.09.v06-33",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -2199,7 +2481,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-31';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-33';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -3263,9 +3545,14 @@ window.addEventListener('afterprint',()=>document.body.classList.remove('print-c
     preparePrintCards();
 
     const estimatedPages=estimateNaturalPrintPages();
-
-    // 正常列印若無法容納在 1 頁，則把基礎資料壓成雙欄並強制分為兩頁。
-    if(estimatedPages>1){
+/*
+      跨瀏覽器判斷：
+      - 1～2 頁內：維持自然排版，「基礎資料設定」與「稅額試算比較表」可在同一頁或自然跨頁。
+      - 只有預估超過 2 頁時，才切換成「基礎資料雙欄 + 自動縮距」模式。
+      - 目標是將基礎資料完整壓在同一頁，並把整份列印控制在 2 頁內。
+      不依賴單一瀏覽器的 print scrollHeight。
+    */
+    if(estimatedPages>2){
       document.body.classList.add('print-force-basic-two-columns');
       applyExtraTightIfNeeded();
     }
