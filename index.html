@@ -999,7 +999,7 @@ body.print-compact input,body.print-compact select{height:22px!important;min-hei
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
 
-/* ===== 簡潔視覺優化 2026.09.v06-25 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-27 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1409,7 +1409,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 列印空白尾頁修正 2026.09.v06-25 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v06-27 ===== */
 @media print {
   /* 螢幕版底部說明不另外占列印頁面；列印結果已有年度資訊 */
   #print-footer-note,
@@ -1457,7 +1457,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 取消頂部固定 2026.09.v06-25 ===== */
+/* ===== 取消頂部固定 2026.09.v06-27 ===== */
 header,
 main > section:first-of-type,
 .sticky,
@@ -1473,7 +1473,7 @@ main > section:first-of-type {
 
 
 
-/* ===== 2026.09.v06-25：移除網址列下方多餘頂部空白 ===== */
+/* ===== 2026.09.v06-27：移除網址列下方多餘頂部空白 ===== */
 html, body {
   margin-top: 0 !important;
   padding-top: 0 !important;
@@ -1502,6 +1502,85 @@ body > .page-root {
   .preschool-deduction-group{
     break-inside:avoid!important;
     page-break-inside:avoid!important;
+  }
+}
+
+
+/* ===== 2026.09.v06-27：後台未啟用額外項目時，不保留空白區塊 ===== */
+#optional-deductions-section.hidden {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  min-height: 0 !important;
+}
+
+
+/* ===== 2026.09.v06-27 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
+@media print {
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* 預設：先嘗試一頁，縮小間距與字級但保持可讀性 */
+  body.print-fit-one-page main {
+    zoom: 0.88;
+  }
+
+  body.print-fit-one-page #basic-data-title,
+  body.print-fit-one-page #tax-result-title {
+    break-before: auto !important;
+    page-break-before: auto !important;
+  }
+
+  body.print-two-pages main {
+    zoom: 1;
+  }
+
+  /* 分二頁模式：第二頁從「稅額試算比較表」標題開始 */
+  body.print-two-pages #tax-result-title {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /* 第一頁標題不可被推到前一頁尾端 */
+  body.print-two-pages #basic-data-title,
+  body.print-two-pages #tax-result-title {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* 避免列印時標題與其第一個內容區塊拆散 */
+  body.print-two-pages #basic-data-title + *,
+  body.print-two-pages #tax-result-title + * {
+    break-before: avoid !important;
+    page-break-before: avoid !important;
+  }
+
+  /* 取消可能造成空白頁的大區塊強制不分頁 */
+  .print-section,
+  .card,
+  .rounded-xl,
+  .rounded-lg {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  /* 但小型表格列、標題、單一輸入群組盡量不拆 */
+  tr,
+  .print-keep,
+  .flex.flex-col.gap-2\.5,
+  .education-deduction-group,
+  .preschool-deduction-group {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 
@@ -1571,7 +1650,7 @@ body > .page-root {
                 
                 <!-- 輸入表單區 -->
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm lg:col-span-5">
-                    <h3 class="text-lg font-semibold text-slate-700 mb-5">基礎資料設定</h3>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-5" id="basic-data-title">基礎資料設定</h3>
                     <div class="flex flex-col gap-6">
                         
                         <div class="flex flex-col gap-2.5">
@@ -1646,23 +1725,23 @@ body > .page-root {
 
                         <div class="border-t border-slate-100 pt-5">
                             <h4 class="text-base font-semibold text-slate-700 mb-4">商號／公司權益比例</h4>
-                            <div class="flex flex-col gap-4">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div class="flex flex-col gap-2.5">
-                                    <label class="text-lg font-semibold text-slate-700" for="business-type">商號組織型態</label>
-                                    <select id="business-type" class="flex h-12 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-base shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-400">
+                                    <label class="text-base font-semibold text-slate-700" for="business-type">商號組織型態</label>
+                                    <select id="business-type" class="flex h-10 w-full rounded-md border-2 border-slate-300 bg-white px-3 py-1.5 text-base shadow-sm focus:outline-none focus:border-slate-500">
                                         <option value="sole">獨資</option>
                                         <option value="partnership">合夥</option>
                                     </select>
                                 </div>
                                 <div class="flex flex-col gap-2.5">
-                                    <label class="text-lg font-semibold text-slate-700" for="company-ownership">本人持股／盈餘分配比例</label>
+                                    <label class="text-base font-semibold text-slate-700" for="company-ownership">本人持股／盈餘分配比例</label>
                                     <div class="relative">
                                         <input type="number" id="company-ownership" min="0" max="100" step="0.01" value="100" class="flex h-10 w-full rounded-md border-2 border-slate-300 bg-white px-3 py-1.5 text-base shadow-sm focus:outline-none focus:border-slate-500 pr-8">
                                         <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-slate-500">%</span>
                                     </div>
-                                    <p id="ownership-hint" class="text-xs text-slate-500">獨資商號固定按 100% 歸課；合夥時本欄為合夥契約之盈餘分配比例；公司則作為本人持股比例。</p>
                                 </div>
                             </div>
+                            <p id="ownership-hint" class="mt-2 text-xs leading-5 text-slate-500">獨資商號固定按 100% 歸課；合夥時依合夥契約之盈餘分配比例；公司則依本人持股比例。</p>
                         </div>
 
                         <button id="calc-btn" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors bg-slate-900 text-white shadow hover:bg-slate-800 h-11 rounded-md px-8 w-full cursor-pointer">立即計算比較</button>
@@ -1676,7 +1755,7 @@ body > .page-root {
                                 <button id="clear-data-btn" type="button" class="px-4 py-2 rounded-md border border-red-200 bg-white text-red-600 hover:bg-red-50">🗑️ 清除儲存資料</button>
                             </div>
                             <div class="flex justify-center">
-                                <button id="print-btn" type="button" class="px-5 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">🖨️ 列印本頁</button>
+                                <button id="print-btn" type="button" class="px-5 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50" onclick="smartPrint()">🖨️ 列印本頁</button>
                             </div>
                             <div class="flex justify-center">
                                 <span id="save-status" class="text-sm text-slate-500 self-center"></span>
@@ -1688,7 +1767,7 @@ body > .page-root {
 
                 <!-- 試算結果表格區 -->
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm lg:col-span-7">
-                    <h3 class="text-lg font-semibold text-slate-700 mb-5">稅額試算比較表</h3>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-5" id="tax-result-title">稅額試算比較表</h3>
                     <div class="relative w-full overflow-auto">
                         <table class="w-full caption-bottom text-sm">
                             <thead>
@@ -1777,7 +1856,7 @@ body > .page-root {
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-25
+            © 2026.09.v06-27
         </div>
     </footer>
 
@@ -1790,7 +1869,7 @@ const DEFAULT_TAX_CONFIG = {
     pageNotice: "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
     showHeaderSection: true,
     taxYear: 115,
-    siteVersion: "2026.09.v06-25",
+    siteVersion: "2026.09.v06-27",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1897,7 +1976,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-25';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-27';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -2936,6 +3015,63 @@ window.addEventListener('afterprint',()=>document.body.classList.remove('print-c
     document.body.classList.remove('print-two-pages');
   });
 })();
+
+
+function setPrintMode(mode){
+  document.body.classList.remove('print-fit-one-page','print-two-pages');
+  if(mode==='one') document.body.classList.add('print-fit-one-page');
+  if(mode==='two') document.body.classList.add('print-two-pages');
+}
+
+function estimatePrintPageCount(){
+  // 以 A4 可列印高度約 1050px 作保守估算；
+  // 先以縮放版量測，若能合理容納則維持一頁。
+  const main=document.querySelector('main');
+  if(!main) return 2;
+
+  const previousOne=document.body.classList.contains('print-fit-one-page');
+  const previousTwo=document.body.classList.contains('print-two-pages');
+
+  setPrintMode('one');
+
+  // 版面完成後用 scrollHeight 做估算；加入少量安全邊界避免剛好溢頁。
+  const height=Math.max(
+    document.documentElement.scrollHeight || 0,
+    document.body.scrollHeight || 0,
+    main.scrollHeight || 0
+  );
+
+  const printableHeight=1120;
+  const estimatedPages=Math.ceil(height/printableHeight);
+
+  if(previousOne) setPrintMode('one');
+  else if(previousTwo) setPrintMode('two');
+  else document.body.classList.remove('print-fit-one-page','print-two-pages');
+
+  return estimatedPages;
+}
+
+function smartPrint(){
+  // 先試一頁；若內容高度超出，就依標題強制分為兩頁。
+  setPrintMode('one');
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      const pages=estimatePrintPageCount();
+      if(pages>1){
+        setPrintMode('two');
+      }else{
+        setPrintMode('one');
+      }
+      window.print();
+    });
+  });
+}
+
+window.addEventListener('afterprint',()=>{
+  document.body.classList.remove('print-fit-one-page','print-two-pages');
+});
+
 </script>
 
 </body>
