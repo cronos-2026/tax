@@ -999,7 +999,7 @@ body.print-compact input,body.print-compact select{height:22px!important;min-hei
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
 
-/* ===== 簡潔視覺優化 2026.09.v06-30 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-31 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1409,7 +1409,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 列印空白尾頁修正 2026.09.v06-30 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v06-31 ===== */
 @media print {
   /* 螢幕版底部說明不另外占列印頁面；列印結果已有年度資訊 */
   #print-footer-note,
@@ -1457,7 +1457,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 取消頂部固定 2026.09.v06-30 ===== */
+/* ===== 取消頂部固定 2026.09.v06-31 ===== */
 header,
 main > section:first-of-type,
 .sticky,
@@ -1473,7 +1473,7 @@ main > section:first-of-type {
 
 
 
-/* ===== 2026.09.v06-30：移除網址列下方多餘頂部空白 ===== */
+/* ===== 2026.09.v06-31：移除網址列下方多餘頂部空白 ===== */
 html, body {
   margin-top: 0 !important;
   padding-top: 0 !important;
@@ -1506,7 +1506,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-30：後台未啟用額外項目時，不保留空白區塊 ===== */
+/* ===== 2026.09.v06-31：後台未啟用額外項目時，不保留空白區塊 ===== */
 #optional-deductions-section.hidden {
   display: none !important;
   margin: 0 !important;
@@ -1516,7 +1516,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-30 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
+/* ===== 2026.09.v06-31 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
 @media print {
   html, body {
     height: auto !important;
@@ -1585,7 +1585,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-30：列印時「基礎資料設定」雙欄排列 ===== */
+/* ===== 2026.09.v06-31：列印時「基礎資料設定」雙欄排列 ===== */
 @media print {
   #basic-data-print-grid {
     display: grid !important;
@@ -1622,7 +1622,7 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-30：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
+/* ===== 2026.09.v06-31：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
 @media print {
   /* 基本列印狀態：不強制雙欄 */
   #basic-data-print-grid {
@@ -2079,7 +2079,7 @@ body > .page-root {
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-30
+            © 2026.09.v06-31
         </div>
     </footer>
 
@@ -2092,7 +2092,7 @@ const DEFAULT_TAX_CONFIG = {
     pageNotice: "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
     showHeaderSection: true,
     taxYear: 115,
-    siteVersion: "2026.09.v06-30",
+    siteVersion: "2026.09.v06-31",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -2199,7 +2199,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-30';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-31';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -3166,7 +3166,7 @@ document.getElementById('res-rate-so').innerText =
         document.getElementById('clear-data-btn').addEventListener('click', clearUserData);
         document.getElementById('dependents').addEventListener('input', updateDependentLimitedMax);
         document.getElementById('dependents').addEventListener('change', updateDependentLimitedMax);
-        document.getElementById('print-btn').addEventListener('click', adaptiveSmartPrint);
+        document.getElementById('print-btn').addEventListener('click', () => window.adaptiveSmartPrint?.());
 
         // 注意：輸入資料不再自動覆蓋多組儲存；只有按「儲存目前資料」才建立新的一組。
 
