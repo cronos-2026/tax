@@ -999,7 +999,7 @@ body.print-compact input,body.print-compact select{height:22px!important;min-hei
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
 
-/* ===== 簡潔視覺優化 2026.09.v06-11 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-12 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1408,6 +1408,37 @@ section,.rounded-xl,.rounded-lg{
   }
 }
 
+
+/* ===== 列印空白尾頁修正 2026.09.v06-12 ===== */
+@media print {
+  /* 螢幕版底部說明不另外占列印頁面；列印結果已有年度資訊 */
+  #print-footer-note,
+  footer {
+    display: none !important;
+  }
+
+  /* 最後一個主要內容區不要強制另起/另結束一頁 */
+  main > section:last-of-type,
+  main > div:last-of-type {
+    break-after: auto !important;
+    page-break-after: auto !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* 避免任何空白容器因 min-height / height 形成額外頁 */
+  .min-h-screen,
+  .min-h-full {
+    min-height: 0 !important;
+  }
+
+  body, main {
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
 </style>
 <style>
         /* 畫面版：加寬內容區並提高可讀性 */
@@ -1596,7 +1627,7 @@ section,.rounded-xl,.rounded-lg{
                                 <span id="save-status" class="text-sm text-slate-500 self-center"></span>
                             </div>
                         </div>
-                        <p class="text-sm text-slate-500 text-center">以 115 年度 (2026) 稅率、免稅額及扣除額基礎計算</p>
+                        <p class="text-sm text-slate-500 text-center" id="print-footer-note">以 115 年度 (2026) 稅率、免稅額及扣除額基礎計算</p>
                     </div>
                 </div>
 
@@ -1691,7 +1722,7 @@ section,.rounded-xl,.rounded-lg{
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-11
+            © 2026.09.v06-12
         </div>
     </footer>
 
@@ -1702,7 +1733,7 @@ const DEFAULT_TAX_CONFIG = {
     pageTitle: "創業節稅試算",
     pageSubtitle: "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
     taxYear: 115,
-    siteVersion: "2026.09.v06-11",
+    siteVersion: "2026.09.v06-12",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1803,7 +1834,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-11';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-12';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
