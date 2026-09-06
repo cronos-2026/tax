@@ -72,31 +72,31 @@
       "locked": true
     },
     "seniorExemption": {
-      "enabled": true
+      "enabled": false
     },
     "salarySpecialDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "disabilitySpecialDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "savingsInvestmentDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "educationTuitionDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "preschoolFirstChildDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "preschoolAdditionalChildDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "longTermCareDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "houseRentDeduction": {
-      "enabled": true
+      "enabled": false
     }
   },
   "siteVersion": "v2026.09"
