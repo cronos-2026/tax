@@ -999,7 +999,7 @@ body.print-compact input,body.print-compact select{height:22px!important;min-hei
 body.print-ultra-compact input,body.print-ultra-compact select{height:20px!important;min-height:20px!important}
 }
 
-/* ===== 簡潔視覺優化 2026.09.v06-12 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-14 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1409,7 +1409,7 @@ section,.rounded-xl,.rounded-lg{
 }
 
 
-/* ===== 列印空白尾頁修正 2026.09.v06-12 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v06-14 ===== */
 @media print {
   /* 螢幕版底部說明不另外占列印頁面；列印結果已有年度資訊 */
   #print-footer-note,
@@ -1436,6 +1436,23 @@ section,.rounded-xl,.rounded-lg{
     min-height: 0 !important;
     height: auto !important;
     overflow: visible !important;
+  }
+}
+
+
+/* ===== 學前子女同欄群組 ===== */
+.preschool-deduction-group{
+  width:100%;
+}
+@media print{
+  .preschool-deduction-group{
+    display:block!important;
+    width:100%!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+  .preschool-deduction-group > div{
+    width:100%!important;
   }
 }
 
@@ -1722,7 +1739,7 @@ section,.rounded-xl,.rounded-lg{
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-12
+            © 2026.09.v06-14
         </div>
     </footer>
 
@@ -1733,7 +1750,7 @@ const DEFAULT_TAX_CONFIG = {
     pageTitle: "創業節稅試算",
     pageSubtitle: "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
     taxYear: 115,
-    siteVersion: "2026.09.v06-12",
+    siteVersion: "2026.09.v06-14",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1834,7 +1851,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-12';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-14';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -1918,9 +1935,15 @@ function renderOptionalDeductionFields(){
     box.appendChild(note);
   }
 
-  active.forEach(([key,m])=>{
+  const preschoolKeys=new Set([
+    'preschoolFirstChildDeduction',
+    'preschoolAdditionalChildDeduction'
+  ]);
+
+  function buildDeductionField(key,m){
     const wrap=document.createElement('div');
     wrap.className='flex flex-col gap-2.5';
+    wrap.dataset.deductionKey=key;
     const id='deduction-'+key;
 
     if(m.type==='auto'){
@@ -1938,8 +1961,29 @@ function renderOptionalDeductionFields(){
         </div>
         <p class="text-xs text-slate-500">${m.help()}</p>`;
     }
-    box.appendChild(wrap);
+    return wrap;
+  }
+
+  const activeMap=new Map(active);
+
+  // 其他項目照原順序輸出；學前兩項合併到同一欄位群組。
+  active.forEach(([key,m])=>{
+    if(preschoolKeys.has(key)) return;
+    box.appendChild(buildDeductionField(key,m));
   });
+
+  const preschoolActive=[
+    ['preschoolFirstChildDeduction',activeMap.get('preschoolFirstChildDeduction')],
+    ['preschoolAdditionalChildDeduction',activeMap.get('preschoolAdditionalChildDeduction')]
+  ].filter(([,m])=>!!m);
+
+  if(preschoolActive.length){
+    const group=document.createElement('div');
+    group.className='preschool-deduction-group flex flex-col gap-4 rounded-lg border border-slate-200 bg-slate-50/60 p-4';
+    group.innerHTML='<div class="font-semibold text-slate-800">幼兒學前特別扣除</div>';
+    preschoolActive.forEach(([key,m])=>group.appendChild(buildDeductionField(key,m)));
+    box.appendChild(group);
+  }
 
   bindMoneyInputs(box);
   updateDependentLimitedMax();

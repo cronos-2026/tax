@@ -1,6 +1,23 @@
 <html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09</title><style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:28px 18px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 2px 8px #0f172a0a}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px 11px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}.primary{background:#0f172a;color:#fff}.secondary{background:#e2e8f0}.success{background:#059669;color:#fff}.danger{background:#fee2e2;color:#b91c1c}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#64748b;font-size:13px}[hidden]{display:none!important}.hidden{display:none!important}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left;font-size:13px}.status{padding:10px 12px;border-radius:9px;background:#f1f5f9;margin-top:12px;white-space:pre-wrap}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1,h2{margin:0 0 14px}code{background:#f1f5f9;padding:2px 5px;border-radius:5px}.login{max-width:620px;margin:8vh auto}.note{background:#fffbeb;border:1px solid #fde68a;padding:11px;border-radius:9px;font-size:13px}
 .login-card{max-width:520px;margin:10vh auto}.login-card h1{font-size:30px}.login-error{margin-top:12px;color:#b91c1c;font-weight:700;font-size:13px}.login-actions{margin-top:16px}.logout{background:#475569;color:#fff} input:disabled{background:#f1f5f9;color:#475569;font-weight:700;cursor:not-allowed}
+
+/* ===== 後台：幼兒學前特別扣除同欄群組 ===== */
+.preschool-admin-group{
+  border:1px solid #dbe3ea;
+  background:#f8fafc;
+  border-radius:10px;
+  padding:14px;
+}
+#deductionSettingsBody tr:has(.preschool-first-row) td{
+  background:#f8fafc;
+  border-top:2px solid #cbd5e1;
+}
+#deductionSettingsBody tr:has(.preschool-additional-row) td{
+  background:#f8fafc;
+  border-bottom:2px solid #cbd5e1;
+}
+
 </style></head><body>
 <div class="wrap">
   <div id="loginView" class="card login-card">
@@ -15,7 +32,7 @@
     <div class="top">
       <div>
         <h1>稅務參數後台管理</h1>
-        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v06-12</strong>　｜　GitHub 同步優化版</div>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v06-14</strong>　｜　GitHub 同步優化版</div>
       </div>
       <button class="btn logout" id="logoutBtn">登出</button>
     </div>
@@ -54,7 +71,19 @@
     </div>
 
     <div class="card"><h2>免稅額／一般與特別扣除額</h2>
-      <div id="deductionGrid" class="grid"><div class="field"><label>每人基本生活費</label><input data-key="basicLivingExpense" type="number" step="any"></div><div class="field"><label>一般免稅額</label><input data-key="exemption" type="number" step="any"></div><div class="field"><label>70歲以上免稅額</label><input data-key="seniorExemption" type="number" step="any"></div><div class="field"><label>標準扣除額－單身</label><input data-key="standardDeductionSingle" type="number" step="any"></div><div class="field"><label>標準扣除額－夫妻</label><input data-key="standardDeductionMarried" type="number" step="any"></div><div class="field"><label>薪資所得特別扣除額</label><input data-key="salarySpecialDeduction" type="number" step="any"></div><div class="field"><label>身心障礙特別扣除額</label><input data-key="disabilitySpecialDeduction" type="number" step="any"></div><div class="field"><label>儲蓄投資特別扣除額上限</label><input data-key="savingsInvestmentDeduction" type="number" step="any"></div><div class="field"><label>教育學費特別扣除額</label><input data-key="educationTuitionDeduction" type="number" step="any"></div><div class="field"><label>幼兒學前－第1名子女</label><input data-key="preschoolFirstChildDeduction" type="number" step="any"></div><div class="field"><label>幼兒學前－第2名以上每人</label><input data-key="preschoolAdditionalChildDeduction" type="number" step="any"></div><div class="field"><label>長期照顧特別扣除額</label><input data-key="longTermCareDeduction" type="number" step="any"></div><div class="field"><label>房屋租金支出特別扣除額</label><input data-key="houseRentDeduction" type="number" step="any"></div></div>
+      <div id="deductionGrid" class="grid"><div class="field"><label>每人基本生活費</label><input data-key="basicLivingExpense" type="number" step="any"></div><div class="field"><label>一般免稅額</label><input data-key="exemption" type="number" step="any"></div><div class="field"><label>70歲以上免稅額</label><input data-key="seniorExemption" type="number" step="any"></div><div class="field"><label>標準扣除額－單身</label><input data-key="standardDeductionSingle" type="number" step="any"></div><div class="field"><label>標準扣除額－夫妻</label><input data-key="standardDeductionMarried" type="number" step="any"></div><div class="field"><label>薪資所得特別扣除額</label><input data-key="salarySpecialDeduction" type="number" step="any"></div><div class="field"><label>身心障礙特別扣除額</label><input data-key="disabilitySpecialDeduction" type="number" step="any"></div><div class="field"><label>儲蓄投資特別扣除額上限</label><input data-key="savingsInvestmentDeduction" type="number" step="any"></div><div class="field"><label>教育學費特別扣除額</label><input data-key="educationTuitionDeduction" type="number" step="any"></div><div class="field preschool-admin-group" style="grid-column:span 1">
+  <label style="font-weight:800;margin-bottom:8px;display:block">幼兒學前特別扣除</label>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div>
+      <label style="font-weight:600;margin-bottom:4px;display:block">第1名子女</label>
+      <input data-key="preschoolFirstChildDeduction" type="number" step="any">
+    </div>
+    <div>
+      <label style="font-weight:600;margin-bottom:4px;display:block">第2名以上每人</label>
+      <input data-key="preschoolAdditionalChildDeduction" type="number" step="any">
+    </div>
+  </div>
+</div><div class="field"><label>長期照顧特別扣除額</label><input data-key="longTermCareDeduction" type="number" step="any"></div><div class="field"><label>房屋租金支出特別扣除額</label><input data-key="houseRentDeduction" type="number" step="any"></div></div>
     </div>
 
     <div class="card"><h2>股利、營所稅與公司參數</h2>
@@ -72,18 +101,14 @@
     <div class="card"><h2>前台計算項目啟用設定</h2>
       <p class="muted" style="line-height:1.7">
         此區不是新增自訂名稱。請從上方既有的免稅額／扣除額項目選擇是否啟用。
-        <strong>勾選「啟用」後，前台會自動新增對應欄位，並同步納入綜合所得稅計算。
-<div class="mt-3 flex flex-wrap gap-2">
-  <button id="enable-all-deductions-btn" type="button"
-    class="px-3 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">
-    全選
-  </button>
-  <button id="disable-all-deductions-btn" type="button"
-    class="px-3 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">
-    取消全選
-  </button>
-</div></strong>
+        <strong>勾選「啟用」後，前台會自動新增對應欄位，並同步納入綜合所得稅計算。</strong>
       </p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button id="enable-all-deductions-btn" type="button"
+          class="px-3 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">全選</button>
+        <button id="disable-all-deductions-btn" type="button"
+          class="px-3 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">取消全選</button>
+      </div>
       <table class="table">
         <thead><tr><th>項目</th><th>年度設定值</th><th>前台新增＋加入計算</th><th>前台處理方式</th></tr></thead>
         <tbody id="deductionSettingsBody"><tr>
@@ -117,13 +142,13 @@
         <input type="checkbox" class="deduction-enable"> 啟用
       </label></td>
       <td class="muted">前台新增符合資格子女人數欄位。</td></tr><tr>
-      <td><strong>幼兒學前－第1名子女</strong></td>
+      <td class="preschool-first-row"><strong>幼兒學前特別扣除－第1名子女</strong></td>
       <td>150,000 元</td>
       <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
         <input type="checkbox" class="deduction-enable"> 啟用
       </label></td>
       <td class="muted">前台新增第1名符合資格幼兒欄位（0或1人）。</td></tr><tr>
-      <td><strong>幼兒學前－第2名以上每人</strong></td>
+      <td class="preschool-additional-row"><strong>幼兒學前特別扣除－第2名以上每人</strong></td>
       <td>225,000 元／人</td>
       <td><label style="display:flex;align-items:center;gap:8px;font-weight:700">
         <input type="checkbox" class="deduction-enable"> 啟用
@@ -317,8 +342,8 @@ const OPTIONAL_DEDUCTION_META = {
   disabilitySpecialDeduction:{label:'身心障礙特別扣除額', unit:'元／人', note:'前台新增符合資格人數欄位。'},
   savingsInvestmentDeduction:{label:'儲蓄投資特別扣除額上限', unit:'元／戶上限', note:'前台新增實際可扣除金額欄位，最高以上方設定值為限。'},
   educationTuitionDeduction:{label:'教育學費特別扣除額', unit:'元／人', note:'前台新增符合資格子女人數欄位。'},
-  preschoolFirstChildDeduction:{label:'幼兒學前－第1名子女', unit:'元', note:'前台新增第1名符合資格幼兒欄位（0或1人）。'},
-  preschoolAdditionalChildDeduction:{label:'幼兒學前－第2名以上每人', unit:'元／人', note:'前台新增第2名以上符合資格幼兒人數欄位。'},
+  preschoolFirstChildDeduction:{label:'幼兒學前特別扣除－第1名子女', unit:'元', note:'前台新增第1名符合資格幼兒欄位（0或1人）。'},
+  preschoolAdditionalChildDeduction:{label:'幼兒學前特別扣除－第2名以上每人', unit:'元／人', note:'前台新增第2名以上符合資格幼兒人數欄位。'},
   longTermCareDeduction:{label:'長期照顧特別扣除額', unit:'元／人', note:'前台新增符合資格人數欄位。'},
   houseRentDeduction:{label:'房屋租金支出特別扣除額', unit:'元／戶上限', note:'前台新增實際符合資格租金扣除額欄位，最高以上方設定值為限。'}
 };
