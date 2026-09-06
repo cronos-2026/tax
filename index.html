@@ -978,7 +978,7 @@
 
 
 
-/* ===== 簡潔視覺優化 2026.09.v06-38 ===== */
+/* ===== 簡潔視覺優化 2026.09.v06-39 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1083,7 +1083,7 @@ section,.rounded-xl,.rounded-lg{
 
 
 
-/* ===== 列印空白尾頁修正 2026.09.v06-38 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v06-39 ===== */
 
 
 
@@ -1094,7 +1094,7 @@ section,.rounded-xl,.rounded-lg{
 
 
 
-/* ===== 取消頂部固定 2026.09.v06-38 ===== */
+/* ===== 取消頂部固定 2026.09.v06-39 ===== */
 header,
 main > section:first-of-type,
 .sticky,
@@ -1110,7 +1110,7 @@ main > section:first-of-type {
 
 
 
-/* ===== 2026.09.v06-38：移除網址列下方多餘頂部空白 ===== */
+/* ===== 2026.09.v06-39：移除網址列下方多餘頂部空白 ===== */
 html, body {
   margin-top: 0 !important;
   padding-top: 0 !important;
@@ -1137,7 +1137,7 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v06-38：後台未啟用額外項目時，不保留空白區塊 ===== */
+/* ===== 2026.09.v06-39：後台未啟用額外項目時，不保留空白區塊 ===== */
 #optional-deductions-section.hidden {
   display: none !important;
   margin: 0 !important;
@@ -1147,15 +1147,15 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-38 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
+/* ===== 2026.09.v06-39 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
 
 
 
-/* ===== 2026.09.v06-38：列印時「基礎資料設定」雙欄排列 ===== */
+/* ===== 2026.09.v06-39：列印時「基礎資料設定」雙欄排列 ===== */
 
 
 
-/* ===== 2026.09.v06-38：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
+/* ===== 2026.09.v06-39：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
 
 
 
@@ -1175,22 +1175,22 @@ body > .page-root {
         
 
 
-/* ===== 2026.09.v06-38：Chrome / Edge 跨瀏覽器列印穩定修正 ===== */
+/* ===== 2026.09.v06-39：Chrome / Edge 跨瀏覽器列印穩定修正 ===== */
 
 
 
 
-/* ===== 2026.09.v06-38：兩頁內自然排版，超過兩頁才啟用雙欄 ===== */
+/* ===== 2026.09.v06-39：兩頁內自然排版，超過兩頁才啟用雙欄 ===== */
 
 
 
 
-/* ===== 2026.09.v06-38：列印大片空白根本修正 ===== */
+/* ===== 2026.09.v06-39：列印大片空白根本修正 ===== */
 
 
 
 
-/* ===== 2026.09.v06-38：列印標題列不再獨佔一頁 ===== */
+/* ===== 2026.09.v06-39：列印標題列不再獨佔一頁 ===== */
 #print-title-inline {
   display: none;
 }
@@ -1199,17 +1199,17 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v06-38：列印時完全移除整塊標題區 ===== */
+/* ===== 2026.09.v06-39：列印時完全移除整塊標題區 ===== */
 
 
 
 
-/* ===== 2026.09.v06-38：列印保留標題，但自動壓縮高度 ===== */
+/* ===== 2026.09.v06-39：列印保留標題，但自動壓縮高度 ===== */
 
 
 
 
-/* ===== 2026.09.v06-38：統一列印規則（移除所有舊版列印衝突） ===== */
+/* ===== 2026.09.v06-39：統一列印規則（移除所有舊版列印衝突） ===== */
 @media print {
   @page {
     size: A4 landscape;
@@ -1429,18 +1429,40 @@ body > .page-root {
   }
 
   body.print-force-basic-two-columns #basic-data-print-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    display: block !important;
+    column-count: 2 !important;
     column-gap: 4mm !important;
-    row-gap: 1mm !important;
-    align-items: start !important;
+    column-fill: balance !important;
+    width: 100% !important;
   }
 
-  body.print-force-basic-two-columns #basic-data-print-grid > * {
-    min-width: 0 !important;
+  /* 一般小區塊保持完整，但不再用 Grid 的「整列高度」分頁方式 */
+  body.print-force-basic-two-columns #basic-data-print-grid > *:not(#optional-deductions-section):not(.no-print) {
+    display: inline-block !important;
+    vertical-align: top !important;
     width: 100% !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
+    min-width: 0 !important;
+    margin: 0 0 1.2mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* 特別扣除額內容較多時允許自然分散，不整塊推到下一頁 */
+  body.print-force-basic-two-columns #optional-deductions-section {
+    display: block !important;
+    width: 100% !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  body.print-force-basic-two-columns #optional-deductions-fields {
+    display: block !important;
+  }
+
+  body.print-force-basic-two-columns #optional-deductions-fields > * {
+    display: inline-block !important;
+    width: 100% !important;
+    margin-bottom: 1mm !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
@@ -1459,7 +1481,6 @@ body > .page-root {
 
   body.print-force-basic-two-columns.print-basic-extra-tight #basic-data-print-grid {
     column-gap: 3mm !important;
-    row-gap: .6mm !important;
   }
 
   body.print-force-basic-two-columns.print-basic-extra-tight #print-basic-card input,
@@ -1479,6 +1500,19 @@ body > .page-root {
     font-size: 6pt !important;
     line-height: 1 !important;
   }
+
+  /* 左右卡片只依自己的內容高度，不互相拉成同高度 */
+  main > section:nth-of-type(2) > .grid {
+    align-items: start !important;
+  }
+
+  #print-basic-card,
+  #print-result-card {
+    align-self: start !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
 }
 
 </style>
@@ -1712,7 +1746,7 @@ body > .page-root {
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-38
+            © 2026.09.v06-39
         </div>
     </footer>
 
@@ -1725,7 +1759,7 @@ const DEFAULT_TAX_CONFIG = {
     pageNotice: "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
     showHeaderSection: true,
     taxYear: 115,
-    siteVersion: "2026.09.v06-38",
+    siteVersion: "2026.09.v06-39",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1832,7 +1866,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-38';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-39';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -2853,23 +2887,26 @@ window.onload = async () => {
     };
   }
 
-  function estimatePagesForNaturalPrint(){
-    const {basic,result,title}=getPrintSections();
-    if(!basic || !result) return 3;
+  function shouldUseCompactTwoPageMode(){
+    const optionalSection=document.getElementById('optional-deductions-section');
+    if(!optionalSection || optionalSection.classList.contains('hidden') || optionalSection.hidden){
+      return false;
+    }
+
+    const visibleOptionalControls=Array.from(
+      optionalSection.querySelectorAll('input,select')
+    ).filter(el=>{
+      const holder=el.closest('[hidden],.hidden');
+      return !holder;
+    }).length;
 
     /*
-      以目前畫面實際高度做比例估算，但只作「是否明顯超過2頁」判斷。
-      門檻刻意保守，避免不同瀏覽器因列印縮放差異而過早啟用雙欄。
+      基本資料本身在 A4 橫式左右版面可維持 1～2 頁。
+      額外扣除欄位大量啟用時才切入：
+      「基礎資料內部雙欄＋稅額試算比較表下一頁」。
+      此判斷不依瀏覽器的螢幕 scrollHeight，因此 Chrome / Edge 較一致。
     */
-    const titleH = title ? Math.min(title.getBoundingClientRect().height, 160) : 0;
-    const basicH = basic.getBoundingClientRect().height || basic.scrollHeight || 0;
-    const resultH = result.getBoundingClientRect().height || result.scrollHeight || 0;
-
-    const availablePerPage = 760;
-    const totalEquivalent = titleH + Math.max(basicH, resultH) + 40;
-
-    // 左右並排時，以較高的卡片高度估算頁數
-    return Math.max(1, Math.ceil(totalEquivalent / availablePerPage));
+    return visibleOptionalControls >= 5;
   }
 
   function applyExtraTightIfNeeded(){
@@ -2894,10 +2931,8 @@ window.onload = async () => {
       'print-two-pages'
     );
 
-    const estimatedPages = estimatePagesForNaturalPrint();
-
-    // 只有明顯預估超過2頁時，才套用「基礎資料雙欄 + 結果第二頁」
-    if(estimatedPages > 2){
+    // 只有內容量明顯會把整份列印推到2頁以上時才切換雙欄模式。
+    if(shouldUseCompactTwoPageMode()){
       document.body.classList.add('print-force-basic-two-columns');
       applyExtraTightIfNeeded();
     }
