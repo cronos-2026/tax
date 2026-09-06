@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taxYear": 115,
-  "lastUpdated": "2026-09-06",
+  "lastUpdated": "2026-09-05",
   "sourceLabel": "財政部：公告115年度綜合所得稅及所得基本稅額相關免稅額、扣除額及課稅級距",
   "basicLivingExpense": 213000,
   "exemption": 101000,
@@ -72,34 +72,34 @@
       "locked": true
     },
     "seniorExemption": {
-      "enabled": true
+      "enabled": false
     },
     "salarySpecialDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "disabilitySpecialDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "savingsInvestmentDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "educationTuitionDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "preschoolFirstChildDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "preschoolAdditionalChildDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "longTermCareDeduction": {
-      "enabled": true
+      "enabled": false
     },
     "houseRentDeduction": {
-      "enabled": true
+      "enabled": false
     }
   },
   "pageNotice": "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
   "showHeaderSection": true,
-  "siteVersion": "v2026.09"
+  "siteVersion": "2026.09.v06-25"
 }
