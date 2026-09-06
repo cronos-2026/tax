@@ -1149,7 +1149,8 @@
                         <div class="mt-3 flex flex-wrap gap-2 justify-center no-print">
                             <button id="save-data-btn" type="button" class="px-4 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">💾 儲存目前資料</button>
                             <button id="load-data-btn" type="button" class="px-4 py-2 rounded-md border border-sky-200 bg-white text-sky-700 hover:bg-sky-50">📂 開啟儲存資料</button>
-                            <button id="clear-data-btn" type="button" class="px-4 py-2 rounded-md border border-red-200 bg-white text-red-600 hover:bg-red-50">🗑️ 清除資料</button>
+                            <button id="reset-data-btn" type="button" class="px-4 py-2 rounded-md border border-amber-200 bg-white text-amber-700 hover:bg-amber-50">↺ 歸零</button>
+                            <button id="clear-data-btn" type="button" class="px-4 py-2 rounded-md border border-red-200 bg-white text-red-600 hover:bg-red-50">🗑️ 清除儲存資料</button>
                             <button id="print-btn" type="button" class="px-4 py-2 rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">🖨️ 列印本頁</button>
                             <span id="save-status" class="text-sm text-slate-500 self-center"></span>
                         </div>
@@ -1391,7 +1392,7 @@ async function loadTaxConfig() {
 const OPTIONAL_DEDUCTION_FRONT_META = {
   seniorExemption:{
     label:'70歲以上受扶養親屬人數', type:'count', suffix:'人',
-    help:()=>`每人免稅額改按 ${formatCurrency(TAX_CONFIG.seniorExemption)} 元計算。`
+    help:()=>`每人免稅額改按 ${formatCurrency(TAX_CONFIG.seniorExemption)} 元計算；此人數不得大於扶養人數。`
   },
   salarySpecialDeduction:{
     label:'薪資所得特別扣除額', type:'auto', suffix:'',
@@ -1399,7 +1400,7 @@ const OPTIONAL_DEDUCTION_FRONT_META = {
   },
   disabilitySpecialDeduction:{
     label:'身心障礙特別扣除資格人數', type:'count', suffix:'人',
-    help:()=>`每人 ${formatCurrency(TAX_CONFIG.disabilitySpecialDeduction)} 元。`
+    help:()=>`每人 ${formatCurrency(TAX_CONFIG.disabilitySpecialDeduction)} 元；此人數不得大於扶養人數。`
   },
   savingsInvestmentDeduction:{
     label:'儲蓄投資特別扣除額', type:'money', suffix:'元',
@@ -1411,7 +1412,7 @@ const OPTIONAL_DEDUCTION_FRONT_META = {
   },
   preschoolFirstChildDeduction:{
     label:'幼兒學前－第1名符合資格子女', type:'count01', suffix:'人',
-    help:()=>`第1名子女扣除額 ${formatCurrency(TAX_CONFIG.preschoolFirstChildDeduction)} 元。`
+    help:()=>`第1名子女扣除額 ${formatCurrency(TAX_CONFIG.preschoolFirstChildDeduction)} 元；此人數不得大於扶養人數。`
   },
   preschoolAdditionalChildDeduction:{
     label:'幼兒學前－第2名以上符合資格子女人數', type:'count', suffix:'人',
@@ -1419,7 +1420,7 @@ const OPTIONAL_DEDUCTION_FRONT_META = {
   },
   longTermCareDeduction:{
     label:'長期照顧特別扣除資格人數', type:'count', suffix:'人',
-    help:()=>`每人 ${formatCurrency(TAX_CONFIG.longTermCareDeduction)} 元。`
+    help:()=>`每人 ${formatCurrency(TAX_CONFIG.longTermCareDeduction)} 元；此人數不得大於扶養人數。`
   },
   houseRentDeduction:{
     label:'房屋租金支出特別扣除額', type:'money', suffix:'元',
@@ -1433,13 +1434,22 @@ function renderOptionalDeductionFields(){
   const section=document.getElementById('optional-deductions-section');
   const box=document.getElementById('optional-deductions-fields');
   if(!section || !box) return;
+
   const active=Object.entries(OPTIONAL_DEDUCTION_FRONT_META).filter(([k])=>deductionEnabled(k));
   section.classList.toggle('hidden', active.length===0);
   box.innerHTML='';
+  if(active.some(([key])=>DEPENDENT_LIMITED_DEDUCTIONS.some(([k])=>k===key))){
+    const note=document.createElement('div');
+    note.className='md:col-span-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600';
+    note.textContent='扶養資格採簡化試算：各項人數分別不得超過扶養人數；達到上限後欄位會鎖定，如需再增加，請先提高扶養人數。不同資格之間不互斥，也不將人數相加比較。';
+    box.appendChild(note);
+  }
+
   active.forEach(([key,m])=>{
     const wrap=document.createElement('div');
     wrap.className='flex flex-col gap-2.5';
     const id='deduction-'+key;
+
     if(m.type==='auto'){
       wrap.innerHTML=`<label class="font-semibold text-slate-700">${m.label}</label>
         <div id="${id}" class="rounded-md border-2 border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">計算時自動依薪資所得帶入</div>
@@ -1457,7 +1467,40 @@ function renderOptionalDeductionFields(){
     }
     box.appendChild(wrap);
   });
+
   bindMoneyInputs(box);
+  updateDependentLimitedMax();
+
+  DEPENDENT_LIMITED_DEDUCTIONS.forEach(([key])=>{
+    const el=document.getElementById('deduction-'+key);
+    if(el && el.tagName==='INPUT'){
+      el.addEventListener('beforeinput',(ev)=>{
+        if(el.dataset.limitLocked==='1' && ev.inputType && ev.inputType.startsWith('insert')){
+          ev.preventDefault();
+        }
+      });
+      el.addEventListener('keydown',(ev)=>{
+        if(el.dataset.limitLocked==='1'){
+          const allowedKeys=['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End'];
+          if(!allowedKeys.includes(ev.key)){
+            ev.preventDefault();
+          }
+        }
+      });
+      el.addEventListener('input',()=>{
+        const dependents=Math.max(0,parseInt(document.getElementById('dependents')?.value)||0);
+        const allowed=key==='preschoolFirstChildDeduction' ? Math.min(1,dependents) : dependents;
+        const current=Math.max(0,Math.floor(Number(el.value)||0));
+        if(current>allowed) el.value=String(allowed);
+        updateDependentLimitedMax();
+        validateDependentLimitedDeductions(false);
+      });
+      el.addEventListener('change',()=>{
+        updateDependentLimitedMax();
+        validateDependentLimitedDeductions(false);
+      });
+    }
+  });
 }
 function bindMoneyInputs(root=document){
   root.querySelectorAll('.money-input').forEach(el=>{
@@ -1474,10 +1517,77 @@ function readDynamicInput(key){
   const el=document.getElementById('deduction-'+key);
   if(!el) return 0;
   if(el.tagName==='INPUT'){
-    return el.classList.contains('money-input') ? parseMoney(el.value) : Math.max(0, Number(el.value)||0);
+    return el.classList.contains('money-input')
+      ? parseMoney(el.value)
+      : Math.max(0, Number(el.value)||0);
   }
   return 0;
 }
+
+const DEPENDENT_LIMITED_DEDUCTIONS = [
+  ['seniorExemption','70歲以上受扶養親屬'],
+  ['disabilitySpecialDeduction','身心障礙特別扣除'],
+  ['preschoolFirstChildDeduction','幼兒學前－第1名子女'],
+  ['longTermCareDeduction','長期照顧特別扣除']
+];
+
+function updateDependentLimitedMax(){
+  const dependents=Math.max(0,parseInt(document.getElementById('dependents')?.value)||0);
+
+  DEPENDENT_LIMITED_DEDUCTIONS.forEach(([key,label])=>{
+    const el=document.getElementById('deduction-'+key);
+    if(!el || el.tagName!=='INPUT') return;
+
+    const allowed = key==='preschoolFirstChildDeduction'
+      ? Math.min(1, dependents)
+      : dependents;
+
+    el.max=String(allowed);
+
+    let current=Math.max(0,Math.floor(Number(el.value)||0));
+    if(current>allowed){
+      el.value=String(allowed);
+      current=allowed;
+    }
+
+    const shouldLock = current>=allowed;
+    el.dataset.limitLocked = shouldLock ? '1' : '0';
+
+    if(shouldLock){
+      el.classList.add('bg-slate-100','text-slate-500','cursor-not-allowed');
+      el.setAttribute('aria-disabled','true');
+      el.title = dependents===0
+        ? '目前扶養人數為 0，請先增加扶養人數'
+        : `已達扶養人數上限 ${allowed} 人；如需增加，請先提高扶養人數`;
+    }else{
+      el.classList.remove('bg-slate-100','text-slate-500','cursor-not-allowed');
+      el.removeAttribute('aria-disabled');
+      el.title='';
+    }
+  });
+}
+
+function validateDependentLimitedDeductions(showMessage=true){
+  const dependents=Math.max(0,parseInt(document.getElementById('dependents')?.value)||0);
+
+  for(const [key,label] of DEPENDENT_LIMITED_DEDUCTIONS){
+    if(!deductionEnabled(key)) continue;
+    const el=document.getElementById('deduction-'+key);
+    if(!el || el.tagName!=='INPUT') continue;
+
+    const count=Math.max(0,Math.floor(Number(el.value)||0));
+    if(count>dependents){
+      if(showMessage){
+        alert(`扶養人數必須大於或等於「${label}」人數。\n目前扶養人數：${dependents} 人；${label}：${count} 人。\n\n各項資格分別與扶養人數比較，不會將不同資格人數相加。`);
+        el.focus();
+      }
+      return false;
+    }
+  }
+  return true;
+}
+
+// 各資格人數彼此獨立，不互斥；每一項僅需分別確認不得超過扶養人數。
 function calculateOptionalDeductions(isMarried, dependents, salarySelf, salarySpouse){
   const items=[];
   let total=0;
@@ -1511,6 +1621,7 @@ function calculateOptionalDeductions(isMarried, dependents, salarySelf, salarySp
   countRules.forEach(([key,label])=>{
     if(!deductionEnabled(key)) return;
     let count=Math.max(0,Math.floor(readDynamicInput(key)));
+    count=Math.min(count,Math.max(0,dependents));
     if(key==='preschoolFirstChildDeduction') count=Math.min(1,count);
     const amount=count*Math.max(0,Number(TAX_CONFIG[key]||0));
     if(amount>0) items.push([label,amount]);
@@ -1679,6 +1790,7 @@ function parseMoney(value) {
         }
 
         function calculateTax() {
+            if (!validateDependentLimitedDeductions(true)) return;
             const revenue = parseMoney(document.getElementById('revenue').value);
             const margin = (parseFloat(document.getElementById('margin').value) || 0) / 100;
             const businessType = document.getElementById('business-type').value;
@@ -1909,8 +2021,10 @@ document.getElementById('res-rate-so').innerText =
             // 先套用會影響其他欄位啟用狀態的選項。
             if (fields && fields.marital !== undefined) document.getElementById('marital').value = fields.marital;
             if (fields && fields['business-type'] !== undefined) document.getElementById('business-type').value = fields['business-type'];
+            if (fields && fields.dependents !== undefined) document.getElementById('dependents').value = fields.dependents;
             updateSpouseSalaryState();
             updateBusinessShareState();
+            updateDependentLimitedMax();
             Object.entries(fields || {}).forEach(([id, value]) => {
                 const el = document.getElementById(id);
                 if (!el || el.disabled) return;
@@ -2016,11 +2130,39 @@ document.getElementById('res-rate-so').innerText =
             });
         }
 
+        function resetCurrentData() {
+            ['salary-self','salary-spouse','dividend','revenue'].forEach(id=>{
+                const el=document.getElementById(id);
+                if(el) el.value='0';
+            });
+            document.querySelectorAll('#optional-deductions-fields input').forEach(el=>{
+                if(el.type==='checkbox' || el.type==='radio') el.checked=false;
+                else el.value='0';
+            });
+
+            const dep=document.getElementById('dependents'); if(dep) dep.value='0';
+            const margin=document.getElementById('margin'); if(margin) margin.value='0';
+            const marital=document.getElementById('marital'); if(marital) marital.value='single';
+            const businessType=document.getElementById('business-type'); if(businessType) businessType.value='sole';
+            const companyOwnership=document.getElementById('company-ownership'); if(companyOwnership) companyOwnership.value='100';
+
+            updateSpouseSalaryState();
+            updateBusinessShareState();
+            document.querySelectorAll('.money-input').forEach(formatInput);
+            resetResults();
+
+            const s=document.getElementById('save-status');
+            if(s){
+                s.textContent='目前輸入數字已歸零（已儲存資料不受影響）';
+                setTimeout(()=>s.textContent='',2500);
+            }
+        }
+
         function clearUserData() {
-            if (!confirm('確定要清除全部已儲存資料，並將目前輸入數字歸零嗎？')) return;
+            if (!confirm('確定要刪除全部已儲存資料，並將目前輸入數字歸零嗎？')) return;
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem(STORAGE_LIST_KEY);
-            ['salary-self','salary-spouse','dividend','revenue'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0';}); document.querySelectorAll('#optional-deductions-fields input').forEach(el=>el.value='0');
+            ['salary-self','salary-spouse','dividend','revenue'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='0';}); document.querySelectorAll('#optional-deductions-fields input').forEach(el=>{if(el.type==='checkbox'||el.type==='radio')el.checked=false;else el.value='0';});
             const dep=document.getElementById('dependents'); if(dep) dep.value='0';
             const margin=document.getElementById('margin'); if(margin) margin.value='0';
             const marital=document.getElementById('marital'); if(marital) marital.value='single';
@@ -2035,7 +2177,10 @@ document.getElementById('res-rate-so').innerText =
 
         document.getElementById('save-data-btn').addEventListener('click', () => saveUserData(true));
         document.getElementById('load-data-btn').addEventListener('click', openSavedData);
+        document.getElementById('reset-data-btn').addEventListener('click', resetCurrentData);
         document.getElementById('clear-data-btn').addEventListener('click', clearUserData);
+        document.getElementById('dependents').addEventListener('input', updateDependentLimitedMax);
+        document.getElementById('dependents').addEventListener('change', updateDependentLimitedMax);
         document.getElementById('print-btn').addEventListener('click', () => { window.print(); });
 
         // 注意：輸入資料不再自動覆蓋多組儲存；只有按「儲存目前資料」才建立新的一組。
