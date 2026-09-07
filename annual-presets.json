@@ -99,7 +99,8 @@
       "houseRentDeduction": {
         "enabled": false
       }
-    }
+    },
+    "customFields": []
   },
   "114": {
     "schemaVersion": 1,
@@ -201,7 +202,8 @@
       "houseRentDeduction": {
         "enabled": false
       }
-    }
+    },
+    "customFields": []
   },
   "115": {
     "schemaVersion": 1,
@@ -303,6 +305,7 @@
       "houseRentDeduction": {
         "enabled": false
       }
-    }
+    },
+    "customFields": []
   }
 }

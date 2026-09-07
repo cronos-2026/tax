@@ -1,4 +1,4 @@
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v06-39</title><style>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v07-02</title><style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:28px 18px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 2px 8px #0f172a0a}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px 11px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}.primary{background:#0f172a;color:#fff}.secondary{background:#e2e8f0}.success{background:#059669;color:#fff}.danger{background:#fee2e2;color:#b91c1c}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#64748b;font-size:13px}[hidden]{display:none!important}.hidden{display:none!important}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left;font-size:13px}.status{padding:10px 12px;border-radius:9px;background:#f1f5f9;margin-top:12px;white-space:pre-wrap}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1,h2{margin:0 0 14px}code{background:#f1f5f9;padding:2px 5px;border-radius:5px}.login{max-width:620px;margin:8vh auto}.note{background:#fffbeb;border:1px solid #fde68a;padding:11px;border-radius:9px;font-size:13px}
 .login-card{max-width:520px;margin:10vh auto}.login-card h1{font-size:30px}.login-error{margin-top:12px;color:#b91c1c;font-weight:700;font-size:13px}.login-actions{margin-top:16px}.logout{background:#475569;color:#fff} input:disabled{background:#f1f5f9;color:#475569;font-weight:700;cursor:not-allowed}
 
@@ -55,6 +55,76 @@
   }
 }
 
+
+.custom-field-admin-row{
+  display:grid;
+  grid-template-columns:150px minmax(150px,1fr) minmax(220px,2fr) auto auto;
+  gap:8px;
+  align-items:center;
+  padding:10px;
+  margin-bottom:8px;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  background:#f8fafc;
+}
+.custom-field-admin-row input,
+.custom-field-admin-row select{
+  width:100%;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  padding:8px 9px;
+  background:#fff;
+}
+.custom-field-admin-row .toggle{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:700;
+}
+.custom-field-admin-row .toggle input{width:auto}
+@media(max-width:900px){
+  .custom-field-admin-row{grid-template-columns:1fr}
+}
+
+
+.custom-block-admin{
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+  background:#fff;
+}
+.custom-block-admin-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+.custom-block-admin-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.custom-block-admin-grid textarea{width:100%;min-height:80px;resize:vertical}
+.custom-calc-settings{
+  border-top:1px dashed #94a3b8;
+  margin-top:4px;
+  padding-top:12px;
+  background:#f8fafc;
+  border-radius:8px;
+  padding:12px;
+}
+@media(max-width:1000px){
+  .custom-block-admin-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:680px){
+  .custom-block-admin-grid{grid-template-columns:1fr}
+  .custom-block-admin-head{align-items:flex-start;flex-direction:column}
+}
+
 </style></head><body>
 <div class="wrap">
   <div id="loginView" class="card login-card">
@@ -69,7 +139,7 @@
     <div class="top">
       <div>
         <h1>稅務參數後台管理</h1>
-        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v06-39</strong>　｜　GitHub 同步優化版</div>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v07-02</strong>　｜　GitHub 同步優化版</div>
       </div>
       <button class="btn logout" id="logoutBtn">登出</button>
     </div>
@@ -109,7 +179,19 @@
       </div>
     </div>
 
-    <div class="card"><h2>年度參數讀取與更新</h2>
+    
+    <div class="card">
+      <h2>新增自定義欄位</h2>
+      <div class="muted" style="margin-bottom:12px;line-height:1.6">
+        這是獨立的自定義版面區塊，與長照、身心障礙、教育學費、幼兒學前等稅務欄位完全分開。預設只影響版面；只有勾選「列入計算」才會顯示計算設定並影響總稅負。列印方式仍使用既有預定規則，不因自定義區塊而改變。
+      </div>
+      <div id="customFieldsList"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn secondary" id="addCustomFieldBtn" type="button">＋ 新增一個自定義版面區塊</button>
+      </div>
+    </div>
+
+<div class="card"><h2>年度參數讀取與更新</h2>
       <div class="grid">
         <div class="field">
           <label>所得年度（民國）</label>
@@ -384,6 +466,7 @@ function render(){
   renderBrackets();
   syncPreschoolDeductionEnable();
   renderDeductionSettings();
+  renderCustomFieldsAdmin();
 }
 function renderBrackets(){
   const b=document.getElementById('bracketsBody');
@@ -438,6 +521,244 @@ function syncPreschoolDeductionEnable(){
   const enabled=!!(first.enabled || more.enabled);
   first.enabled=enabled;
   more.enabled=enabled;
+}
+
+
+function ensureCustomFields(){
+  if(!Array.isArray(cfg.customFields)) cfg.customFields=[];
+}
+
+function renderCustomFieldsAdmin(){
+  ensureCustomFields();
+  const box=document.getElementById('customFieldsList');
+  if(!box) return;
+  box.innerHTML='';
+
+  if(cfg.customFields.length===0){
+    box.innerHTML='<div class="muted">目前沒有自定義版面區塊。原有稅務欄位、計算方式與列印方式完全不受影響。</div>';
+    return;
+  }
+
+  const areas=[
+    ['topmost','最上方標題列上方'],
+    ['fixed','標題列下方／固定說明列'],
+    ['basic','基礎資料設定區'],
+    ['tax','稅額試算比較表區']
+  ];
+  const imagePositions=[
+    ['none','不顯示圖片'],
+    ['top','圖片在上方'],
+    ['left','圖片在左側'],
+    ['right','圖片在右側'],
+    ['background','圖片作為背景']
+  ];
+
+  cfg.customFields.forEach((item,index)=>{
+    const wrap=document.createElement('div');
+    wrap.className='custom-block-admin';
+
+    const head=document.createElement('div');
+    head.className='custom-block-admin-head';
+
+    const title=document.createElement('strong');
+    title.textContent=`自定義區塊 ${index+1}`;
+
+    const enabledLabel=document.createElement('label');
+    enabledLabel.className='toggle';
+    const enabled=document.createElement('input');
+    enabled.type='checkbox';
+    enabled.checked=item.enabled!==false;
+    enabled.onchange=()=>{item.enabled=enabled.checked;};
+    enabledLabel.append(enabled,document.createTextNode('顯示'));
+
+    const del=document.createElement('button');
+    del.type='button';
+    del.className='btn danger';
+    del.textContent='刪除區塊';
+    del.onclick=()=>{cfg.customFields.splice(index,1);renderCustomFieldsAdmin();};
+
+    head.append(title,enabledLabel,del);
+
+    const grid=document.createElement('div');
+    grid.className='custom-block-admin-grid';
+
+    function field(labelText,control){
+      const f=document.createElement('div');
+      f.className='field';
+      const l=document.createElement('label');
+      l.textContent=labelText;
+      f.append(l,control);
+      grid.appendChild(f);
+    }
+
+    const area=document.createElement('select');
+    areas.forEach(([v,t])=>{
+      const o=document.createElement('option');o.value=v;o.textContent=t;o.selected=(item.area||'basic')===v;area.appendChild(o);
+    });
+    area.onchange=()=>{item.area=area.value;};
+    field('顯示位置',area);
+
+    const label=document.createElement('input');
+    label.type='text';label.value=item.label||'';label.placeholder='區塊標題';
+    label.oninput=()=>{item.label=label.value;};
+    field('標題／欄位名稱',label);
+
+    const value=document.createElement('textarea');
+    value.rows=3;value.value=item.value||'';value.placeholder='顯示內容';
+    value.oninput=()=>{item.value=value.value;};
+    field('內容',value);
+
+    const bg=document.createElement('input');
+    bg.type='color';bg.value=item.backgroundColor||'#ffffff';
+    bg.oninput=()=>{item.backgroundColor=bg.value;};
+    field('背景顏色',bg);
+
+    const fg=document.createElement('input');
+    fg.type='color';fg.value=item.textColor||'#0f172a';
+    fg.oninput=()=>{item.textColor=fg.value;};
+    field('文字顏色',fg);
+
+    const align=document.createElement('select');
+    [['left','靠左'],['center','置中'],['right','靠右']].forEach(([v,t])=>{
+      const o=document.createElement('option');o.value=v;o.textContent=t;o.selected=(item.textAlign||'left')===v;align.appendChild(o);
+    });
+    align.onchange=()=>{item.textAlign=align.value;};
+    field('文字對齊',align);
+
+    const imgUrl=document.createElement('input');
+    imgUrl.type='text';imgUrl.value=item.imageUrl||'';imgUrl.placeholder='https://...';
+    imgUrl.oninput=()=>{item.imageUrl=imgUrl.value;};
+    field('圖片網址',imgUrl);
+
+    const imgPos=document.createElement('select');
+    imagePositions.forEach(([v,t])=>{
+      const o=document.createElement('option');o.value=v;o.textContent=t;o.selected=(item.imagePosition||'none')===v;imgPos.appendChild(o);
+    });
+    imgPos.onchange=()=>{item.imagePosition=imgPos.value;};
+    field('圖片位置',imgPos);
+
+    const imgWidth=document.createElement('input');
+    imgWidth.type='text';imgWidth.value=item.imageWidth||'';imgWidth.placeholder='例：120 或 30%';
+    imgWidth.oninput=()=>{item.imageWidth=imgWidth.value;};
+    field('圖片寬度',imgWidth);
+
+    const bgImg=document.createElement('input');
+    bgImg.type='text';bgImg.value=item.backgroundImageUrl||'';bgImg.placeholder='背景圖片網址';
+    bgImg.oninput=()=>{item.backgroundImageUrl=bgImg.value;};
+    field('背景圖片',bgImg);
+
+    const border=document.createElement('input');
+    border.type='color';border.value=item.borderColor||'#dbe3ea';
+    border.oninput=()=>{item.borderColor=border.value;};
+    field('邊框顏色',border);
+
+    const radius=document.createElement('input');
+    radius.type='number';radius.min='0';radius.max='60';radius.value=item.borderRadius??10;
+    radius.oninput=()=>{item.borderRadius=Number(radius.value)||0;};
+    field('圓角(px)',radius);
+
+    const padding=document.createElement('input');
+    padding.type='number';padding.min='0';padding.max='80';padding.value=item.padding??12;
+    padding.oninput=()=>{item.padding=Number(padding.value)||0;};
+    field('內距(px)',padding);
+
+    const calcToggleWrap=document.createElement('div');
+    calcToggleWrap.className='field custom-calc-toggle-field';
+    const calcToggleLabel=document.createElement('label');
+    calcToggleLabel.className='header-toggle-row';
+    const calcToggle=document.createElement('input');
+    calcToggle.type='checkbox';
+    calcToggle.checked=item.includeInCalculation===true;
+    const calcText=document.createElement('span');
+    calcText.textContent='列入計算';
+    calcToggleLabel.append(calcToggle,calcText);
+    const calcHint=document.createElement('div');
+    calcHint.className='muted';
+    calcHint.style.marginTop='6px';
+    calcHint.textContent='未勾選時，此區塊只影響版面，不會改變任何計算結果。';
+    calcToggleWrap.append(calcToggleLabel,calcHint);
+    grid.appendChild(calcToggleWrap);
+
+    const calcBox=document.createElement('div');
+    calcBox.className='custom-calc-settings';
+    calcBox.style.gridColumn='1/-1';
+
+    const calcGrid=document.createElement('div');
+    calcGrid.className='custom-block-admin-grid';
+
+    const calcLabel=document.createElement('input');
+    calcLabel.type='text';calcLabel.value=item.calcLabel||'';calcLabel.placeholder='例：其他調整';
+    calcLabel.oninput=()=>{item.calcLabel=calcLabel.value;};
+
+    const calcAmount=document.createElement('input');
+    calcAmount.type='number';calcAmount.min='0';calcAmount.step='1';calcAmount.value=item.calcAmount??0;
+    calcAmount.oninput=()=>{item.calcAmount=Math.max(0,Number(calcAmount.value)||0);};
+
+    const calcOperation=document.createElement('select');
+    [['add','加計'],['subtract','減除']].forEach(([v,t])=>{
+      const o=document.createElement('option');o.value=v;o.textContent=t;o.selected=(item.calcOperation||'add')===v;calcOperation.appendChild(o);
+    });
+    calcOperation.onchange=()=>{item.calcOperation=calcOperation.value;};
+
+    const calcTarget=document.createElement('select');
+    [['both','商號＋公司'],['sole','只影響商號'],['company','只影響公司']].forEach(([v,t])=>{
+      const o=document.createElement('option');o.value=v;o.textContent=t;o.selected=(item.calcTarget||'both')===v;calcTarget.appendChild(o);
+    });
+    calcTarget.onchange=()=>{item.calcTarget=calcTarget.value;};
+
+    function calcField(text,control){
+      const f=document.createElement('div');f.className='field';
+      const l=document.createElement('label');l.textContent=text;
+      f.append(l,control);calcGrid.appendChild(f);
+    }
+    calcField('計算項目名稱',calcLabel);
+    calcField('調整金額',calcAmount);
+    calcField('計算方式',calcOperation);
+    calcField('影響對象',calcTarget);
+
+    calcBox.appendChild(calcGrid);
+    grid.appendChild(calcBox);
+
+    function refreshCalcBox(){
+      calcBox.style.display=calcToggle.checked?'block':'none';
+    }
+    calcToggle.onchange=()=>{
+      item.includeInCalculation=calcToggle.checked;
+      refreshCalcBox();
+    };
+    refreshCalcBox();
+
+    wrap.append(head,grid);
+    box.appendChild(wrap);
+  });
+}
+
+function addCustomField(){
+  ensureCustomFields();
+  cfg.customFields.push({
+    area:'basic',
+    label:'新增區塊',
+    value:'',
+    enabled:true,
+    backgroundColor:'#ffffff',
+    textColor:'#0f172a',
+    textAlign:'left',
+    imageUrl:'',
+    imagePosition:'none',
+    imageWidth:'',
+    backgroundImageUrl:'',
+    backgroundPosition:'center',
+    backgroundSize:'cover',
+    borderColor:'#dbe3ea',
+    borderRadius:10,
+    padding:12,
+    includeInCalculation:false,
+    calcLabel:'',
+    calcAmount:0,
+    calcOperation:'add',
+    calcTarget:'both'
+  });
+  renderCustomFieldsAdmin();
 }
 
 function renderDeductionSettings(){
@@ -644,6 +965,8 @@ showLogin();
     if(noneBtn) noneBtn.addEventListener('click', () => setAllFrontItems(false));
   });
 })();
+
+document.getElementById('addCustomFieldBtn')?.addEventListener('click', addCustomField);
 </script>
 
 </body></html>

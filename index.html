@@ -978,7 +978,7 @@
 
 
 
-/* ===== 簡潔視覺優化 2026.09.v06-39 ===== */
+/* ===== 簡潔視覺優化 2026.09.v07-02 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1083,7 +1083,7 @@ section,.rounded-xl,.rounded-lg{
 
 
 
-/* ===== 列印空白尾頁修正 2026.09.v06-39 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v07-02 ===== */
 
 
 
@@ -1094,7 +1094,7 @@ section,.rounded-xl,.rounded-lg{
 
 
 
-/* ===== 取消頂部固定 2026.09.v06-39 ===== */
+/* ===== 取消頂部固定 2026.09.v07-02 ===== */
 header,
 main > section:first-of-type,
 .sticky,
@@ -1110,7 +1110,7 @@ main > section:first-of-type {
 
 
 
-/* ===== 2026.09.v06-39：移除網址列下方多餘頂部空白 ===== */
+/* ===== 2026.09.v07-02：移除網址列下方多餘頂部空白 ===== */
 html, body {
   margin-top: 0 !important;
   padding-top: 0 !important;
@@ -1137,7 +1137,7 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v06-39：後台未啟用額外項目時，不保留空白區塊 ===== */
+/* ===== 2026.09.v07-02：後台未啟用額外項目時，不保留空白區塊 ===== */
 #optional-deductions-section.hidden {
   display: none !important;
   margin: 0 !important;
@@ -1147,15 +1147,15 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v06-39 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
+/* ===== 2026.09.v07-02 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
 
 
 
-/* ===== 2026.09.v06-39：列印時「基礎資料設定」雙欄排列 ===== */
+/* ===== 2026.09.v07-02：列印時「基礎資料設定」雙欄排列 ===== */
 
 
 
-/* ===== 2026.09.v06-39：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
+/* ===== 2026.09.v07-02：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
 
 
 
@@ -1175,22 +1175,22 @@ body > .page-root {
         
 
 
-/* ===== 2026.09.v06-39：Chrome / Edge 跨瀏覽器列印穩定修正 ===== */
+/* ===== 2026.09.v07-02：Chrome / Edge 跨瀏覽器列印穩定修正 ===== */
 
 
 
 
-/* ===== 2026.09.v06-39：兩頁內自然排版，超過兩頁才啟用雙欄 ===== */
+/* ===== 2026.09.v07-02：兩頁內自然排版，超過兩頁才啟用雙欄 ===== */
 
 
 
 
-/* ===== 2026.09.v06-39：列印大片空白根本修正 ===== */
+/* ===== 2026.09.v07-02：列印大片空白根本修正 ===== */
 
 
 
 
-/* ===== 2026.09.v06-39：列印標題列不再獨佔一頁 ===== */
+/* ===== 2026.09.v07-02：列印標題列不再獨佔一頁 ===== */
 #print-title-inline {
   display: none;
 }
@@ -1199,17 +1199,17 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v06-39：列印時完全移除整塊標題區 ===== */
+/* ===== 2026.09.v07-02：列印時完全移除整塊標題區 ===== */
 
 
 
 
-/* ===== 2026.09.v06-39：列印保留標題，但自動壓縮高度 ===== */
+/* ===== 2026.09.v07-02：列印保留標題，但自動壓縮高度 ===== */
 
 
 
 
-/* ===== 2026.09.v06-39：統一列印規則（移除所有舊版列印衝突） ===== */
+/* ===== 2026.09.v07-02：統一列印規則（移除所有舊版列印衝突） ===== */
 @media print {
   @page {
     size: A4 landscape;
@@ -1515,9 +1515,85 @@ body > .page-root {
 
 }
 
+
+
+/* ===== 2026.09.v07-02：新增自定義欄位（不改原有欄位） ===== */
+.custom-fields-zone:empty{display:none!important}
+.custom-field-row{
+  display:grid;
+  grid-template-columns:minmax(120px,220px) 1fr;
+  gap:10px;
+  align-items:center;
+  padding:8px 10px;
+  margin:0 0 8px;
+  border:1px solid #dbe3ea;
+  border-radius:8px;
+  background:#fff;
+}
+.custom-field-label{font-weight:700;color:#334155}
+.custom-field-value{color:#0f172a;white-space:pre-wrap;word-break:break-word}
+#custom-fields-topmost,
+#custom-fields-fixed{padding:6px 16px 0}
+#custom-fields-topmost .custom-field-row,
+#custom-fields-fixed .custom-field-row{
+  max-width:1280px;
+  margin-left:auto;
+  margin-right:auto;
+}
+#custom-fields-fixed{background:#f8fafc}
+@media(max-width:700px){
+  .custom-field-row{grid-template-columns:1fr;gap:3px}
+}
+@media print{
+  .custom-field-row{
+    grid-template-columns:34% 66%!important;
+    gap:2mm!important;
+    padding:1mm 1.5mm!important;
+    margin-bottom:1mm!important;
+    border-radius:2px!important;
+    font-size:7pt!important;
+    line-height:1.05!important;
+    break-inside:avoid!important;
+    page-break-inside:avoid!important;
+  }
+  #custom-fields-topmost,
+  #custom-fields-fixed{
+    padding:0!important;
+    margin:0 0 1mm!important;
+  }
+}
+
+
+
+/* ===== 2026.09.v07-02：獨立自定義版面（不改預定列印方式） ===== */
+.custom-layout-block{
+  width:100%;
+  border:1px solid #dbe3ea;
+  border-radius:10px;
+  padding:12px;
+  margin:0 0 10px;
+  background:#fff;
+  overflow:hidden;
+}
+.custom-layout-label{font-weight:800;margin-bottom:4px}
+.custom-layout-value{white-space:pre-wrap;word-break:break-word;line-height:1.55}
+.custom-layout-image{display:block;max-width:100%;height:auto;object-fit:contain}
+.custom-layout-block.image-top{display:flex;flex-direction:column;gap:10px}
+.custom-layout-block.image-left,
+.custom-layout-block.image-right{display:flex;gap:12px;align-items:center}
+.custom-layout-block.image-left .custom-layout-image,
+.custom-layout-block.image-right .custom-layout-image{flex:0 0 auto}
+.custom-layout-block.image-left .custom-layout-text,
+.custom-layout-block.image-right .custom-layout-text{flex:1 1 auto;min-width:0}
+@media(max-width:700px){
+  .custom-layout-block.image-left,
+  .custom-layout-block.image-right{flex-direction:column;align-items:stretch}
+}
+
 </style>
 </head>
 <body class="flex min-h-screen flex-col bg-white font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+<div id="custom-fields-topmost" class="custom-fields-zone"></div>
 <!-- Main Content -->
     <main class="flex-1">
         <section id="top-title-section" class="relative overflow-hidden bg-gradient-to-br from-sky-50 via-slate-50 to-emerald-50 pt-14 pb-8 md:pt-20 md:pb-10">
@@ -1529,6 +1605,7 @@ body > .page-root {
                 </div>
             </div>
         </section>
+        <div id="custom-fields-fixed" class="custom-fields-zone"></div>
 
         <section class="mx-auto max-w-7xl px-5 py-10 md:py-14">
             <div id="print-title-inline" class="hidden">
@@ -1541,6 +1618,7 @@ body > .page-root {
                 <!-- 輸入表單區 -->
                 <div id="print-basic-card" class="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm lg:col-span-5">
                     <h3 class="text-lg font-semibold text-slate-700 mb-5" id="basic-data-title">基礎資料設定</h3>
+                    <div id="custom-fields-basic" class="custom-fields-zone"></div>
                     <div class="flex flex-col gap-6" id="basic-data-print-grid">
                         
                         <div class="flex flex-col gap-2.5">
@@ -1658,6 +1736,7 @@ body > .page-root {
                 <!-- 試算結果表格區 -->
                 <div id="print-result-card" class="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm lg:col-span-7">
                     <h3 class="text-lg font-semibold text-slate-700 mb-5" id="tax-result-title">稅額試算比較表</h3>
+                    <div id="custom-fields-tax" class="custom-fields-zone"></div>
                     <div class="relative w-full overflow-auto">
                         <table class="w-full caption-bottom text-sm">
                             <thead>
@@ -1746,7 +1825,7 @@ body > .page-root {
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v06-39
+            © 2026.09.v07-02
         </div>
     </footer>
 
@@ -1759,7 +1838,7 @@ const DEFAULT_TAX_CONFIG = {
     pageNotice: "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
     showHeaderSection: true,
     taxYear: 115,
-    siteVersion: "2026.09.v06-39",
+    siteVersion: "2026.09.v07-02",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1866,7 +1945,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v06-39';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v07-02';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業節稅試算'}｜${y}年所得最佳化`;
@@ -2526,7 +2605,8 @@ function parseMoney(value) {
             const coPit = coOpt.bestTax;
             // 比較「本人經濟歸屬稅負」：公司營所稅依法由公司負擔；此處僅按本人持股比例作經濟歸屬比較。
             const allocatedCompanyTax = coBizTax * companyOwnership;
-            const coTotal = allocatedCompanyTax + coPit;
+            const customCalc = getCustomCalculationAdjustments();
+            const coTotal = Math.max(0, allocatedCompanyTax + coPit + customCalc.company);
 
             // 顯示
             document.getElementById('res-income-so').innerText =
@@ -2612,7 +2692,8 @@ document.getElementById('res-rate-so').innerText =
                       '，省 ' + formatCurrency(coOpt.saving) + ' 元'
                     : '無股利，無需比較';
 
-            const soTotal = soPit;
+            const soTotal = Math.max(0, soPit + customCalc.sole);
+            renderCustomCalculationRows(customCalc);
             document.getElementById('res-total-so').innerText = formatCurrency(soTotal) + ' 元';
             document.getElementById('res-total-co').innerHTML =
                 formatCurrency(coTotal) + ' 元' +
@@ -2844,6 +2925,162 @@ document.getElementById('res-rate-so').innerText =
         });
         document.getElementById('business-type').addEventListener('change', () => { updateBusinessShareState(); });
                 
+
+function renderCustomFields(){
+  const zones={
+    topmost:document.getElementById('custom-fields-topmost'),
+    fixed:document.getElementById('custom-fields-fixed'),
+    basic:document.getElementById('custom-fields-basic'),
+    tax:document.getElementById('custom-fields-tax')
+  };
+
+  Object.values(zones).forEach(zone=>{
+    if(zone) zone.innerHTML='';
+  });
+
+  const items=Array.isArray(TAX_CONFIG.customFields) ? TAX_CONFIG.customFields : [];
+
+  items
+    .filter(item=>item && item.enabled!==false && zones[item.area])
+    .forEach(item=>{
+      const block=document.createElement('div');
+      block.className='custom-layout-block';
+
+      block.style.backgroundColor=item.backgroundColor || '#ffffff';
+      block.style.color=item.textColor || '#0f172a';
+      block.style.textAlign=item.textAlign || 'left';
+
+      if(item.borderColor) block.style.borderColor=item.borderColor;
+      if(item.borderRadius!==undefined && item.borderRadius!==''){
+        block.style.borderRadius=`${Math.max(0,Number(item.borderRadius)||0)}px`;
+      }
+      if(item.padding!==undefined && item.padding!==''){
+        block.style.padding=`${Math.max(0,Number(item.padding)||0)}px`;
+      }
+
+      const textWrap=document.createElement('div');
+      textWrap.className='custom-layout-text';
+
+      if((item.label||'').trim()){
+        const label=document.createElement('div');
+        label.className='custom-layout-label';
+        label.textContent=item.label;
+        textWrap.appendChild(label);
+      }
+
+      if((item.value||'').trim()){
+        const value=document.createElement('div');
+        value.className='custom-layout-value';
+        value.textContent=item.value;
+        textWrap.appendChild(value);
+      }
+
+      const imageUrl=(item.imageUrl||'').trim();
+      const imagePosition=item.imagePosition || 'none';
+
+      function makeImage(){
+        if(!imageUrl) return null;
+        const img=document.createElement('img');
+        img.src=imageUrl;
+        img.alt=item.imageAlt || item.label || '自定義圖片';
+        img.className='custom-layout-image';
+        const w=String(item.imageWidth||'').trim();
+        if(w) img.style.width=/[%a-z]+$/i.test(w) ? w : `${w}px`;
+        return img;
+      }
+
+      const img=makeImage();
+
+      const bgImage=(item.backgroundImageUrl||'').trim();
+      if(bgImage){
+        block.style.backgroundImage=`url("${bgImage.replace(/"/g,'%22')}")`;
+        block.style.backgroundSize=item.backgroundSize || 'cover';
+        block.style.backgroundPosition=item.backgroundPosition || 'center';
+        block.style.backgroundRepeat='no-repeat';
+      }
+
+      if(img && imagePosition==='background'){
+        block.style.backgroundImage=`url("${imageUrl.replace(/"/g,'%22')}")`;
+        block.style.backgroundSize=item.backgroundSize || 'cover';
+        block.style.backgroundPosition=item.backgroundPosition || 'center';
+        block.style.backgroundRepeat='no-repeat';
+        block.appendChild(textWrap);
+      }else if(img && imagePosition==='top'){
+        block.classList.add('image-top');
+        block.append(img,textWrap);
+      }else if(img && imagePosition==='left'){
+        block.classList.add('image-left');
+        block.append(img,textWrap);
+      }else if(img && imagePosition==='right'){
+        block.classList.add('image-right');
+        block.append(textWrap,img);
+      }else{
+        block.appendChild(textWrap);
+      }
+
+      zones[item.area].appendChild(block);
+    });
+}
+
+/*
+  自定義版面「預設不參與計算」。
+  只有後台明確勾選 includeInCalculation=true 的項目才產生調整額。
+*/
+function getCustomCalculationAdjustments(){
+  const result={sole:0,company:0,rows:[]};
+  const items=Array.isArray(TAX_CONFIG.customFields) ? TAX_CONFIG.customFields : [];
+
+  items.forEach(item=>{
+    if(!item || item.enabled===false || item.includeInCalculation!==true) return;
+
+    const amount=Math.max(0,Number(item.calcAmount)||0);
+    const signed=(item.calcOperation==='subtract' ? -1 : 1)*amount;
+    const target=item.calcTarget || 'both';
+
+    if(target==='sole' || target==='both') result.sole+=signed;
+    if(target==='company' || target==='both') result.company+=signed;
+
+    result.rows.push({
+      label:item.calcLabel || item.label || '自定義計算調整',
+      amount,
+      signed,
+      target
+    });
+  });
+
+  return result;
+}
+
+function renderCustomCalculationRows(calc){
+  document.querySelectorAll('.custom-calc-row').forEach(el=>el.remove());
+
+  const totalCell=document.getElementById('res-total-so');
+  const totalRow=totalCell ? totalCell.closest('tr') : null;
+  const tbody=totalRow ? totalRow.parentElement : null;
+  if(!tbody || !calc || !calc.rows?.length) return;
+
+  calc.rows.forEach(row=>{
+    const tr=document.createElement('tr');
+    tr.className='custom-calc-row';
+
+    const c1=document.createElement('td');
+    c1.className='p-3 text-base text-slate-600';
+    c1.textContent=row.label;
+
+    const c2=document.createElement('td');
+    c2.className='p-3 text-right font-mono';
+    const c3=document.createElement('td');
+    c3.className='p-3 text-right font-mono';
+
+    const txt=(row.signed<0?'－':'＋')+formatCurrency(row.amount)+' 元';
+    c2.textContent=(row.target==='sole'||row.target==='both') ? txt : '不適用';
+    c3.textContent=(row.target==='company'||row.target==='both') ? txt : '不適用';
+
+    tr.append(c1,c2,c3);
+    tbody.insertBefore(tr,totalRow);
+  });
+}
+
 function applyPageText(){
   const t=document.getElementById('pageTitle');
   const s=document.getElementById('pageSubtitle');
@@ -2867,6 +3104,7 @@ function applyPageText(){
 window.onload = async () => {
             await loadTaxConfig();
     applyPageText();
+    renderCustomFields();
             document.querySelectorAll('.money-input').forEach(formatInput);
             updateSpouseSalaryState();
             updateBusinessShareState();
