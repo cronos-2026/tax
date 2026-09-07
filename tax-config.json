@@ -51,8 +51,8 @@
       "diff": 949100
     }
   ],
-  "pageTitle": "創業節稅試算",
-  "pageSubtitle": "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
+  "pageTitle": "創業，我該設立商號還是公司呢?",
+  "pageSubtitle": "初創業，對於稅務的計算完全一無所知，來試算一下~商號還是公司的稅額吧!!",
   "sourceUrl": "https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=34b463dc8f1b49f29d440d92a6fd5139",
   "deductionSettings": {
     "basicLivingExpense": {
@@ -101,6 +101,7 @@
   },
   "pageNotice": "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
   "showHeaderSection": true,
-  "siteVersion": "2026.09.v07-02",
-  "customFields": []
+  "siteVersion": "2026.09.v07-07",
+  "customFields": [],
+  "customCalculationFields": []
 }

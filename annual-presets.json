@@ -52,8 +52,8 @@
         "diff": 911700
       }
     ],
-    "pageTitle": "創業節稅試算",
-    "pageSubtitle": "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
+    "pageTitle": "創業，我該設立商號還是公司呢?",
+    "pageSubtitle": "初創業，對於稅務的計算完全一無所知，來試算一下~商號還是公司的稅額吧!!",
     "sourceUrl": "https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=0bfb4c93c338453b8d00a415d61e2bf2",
     "deductionSettings": {
       "basicLivingExpense": {
@@ -100,7 +100,8 @@
         "enabled": false
       }
     },
-    "customFields": []
+    "customFields": [],
+    "customCalculationFields": []
   },
   "114": {
     "schemaVersion": 1,
@@ -155,8 +156,8 @@
         "diff": 911700
       }
     ],
-    "pageTitle": "創業節稅試算",
-    "pageSubtitle": "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
+    "pageTitle": "創業，我該設立商號還是公司呢?",
+    "pageSubtitle": "初創業，對於稅務的計算完全一無所知，來試算一下~商號還是公司的稅額吧!!",
     "sourceUrl": "https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=550775ba71cf40de8ce75016aff40828",
     "deductionSettings": {
       "basicLivingExpense": {
@@ -203,7 +204,8 @@
         "enabled": false
       }
     },
-    "customFields": []
+    "customFields": [],
+    "customCalculationFields": []
   },
   "115": {
     "schemaVersion": 1,
@@ -258,8 +260,8 @@
         "diff": 949100
       }
     ],
-    "pageTitle": "創業節稅試算",
-    "pageSubtitle": "準備創業但還不確定要設行號還是開公司？輸入預估營業額，立即看兩種組織型態的稅金差多少。",
+    "pageTitle": "創業，我該設立商號還是公司呢?",
+    "pageSubtitle": "初創業，對於稅務的計算完全一無所知，來試算一下~商號還是公司的稅額吧!!",
     "sourceUrl": "https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=34b463dc8f1b49f29d440d92a6fd5139",
     "deductionSettings": {
       "basicLivingExpense": {
@@ -306,6 +308,7 @@
         "enabled": false
       }
     },
-    "customFields": []
+    "customFields": [],
+    "customCalculationFields": []
   }
 }
