@@ -1,4 +1,4 @@
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v07-09</title><style>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v07-10</title><style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:28px 18px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 2px 8px #0f172a0a}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px 11px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}.primary{background:#0f172a;color:#fff}.secondary{background:#e2e8f0}.success{background:#059669;color:#fff}.danger{background:#fee2e2;color:#b91c1c}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#64748b;font-size:13px}[hidden]{display:none!important}.hidden{display:none!important}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left;font-size:13px}.status{padding:10px 12px;border-radius:9px;background:#f1f5f9;margin-top:12px;white-space:pre-wrap}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1,h2{margin:0 0 14px}code{background:#f1f5f9;padding:2px 5px;border-radius:5px}.login{max-width:620px;margin:8vh auto}.note{background:#fffbeb;border:1px solid #fde68a;padding:11px;border-radius:9px;font-size:13px}
 .login-card{max-width:520px;margin:10vh auto}.login-card h1{font-size:30px}.login-error{margin-top:12px;color:#b91c1c;font-weight:700;font-size:13px}.login-actions{margin-top:16px}.logout{background:#475569;color:#fff} input:disabled{background:#f1f5f9;color:#475569;font-weight:700;cursor:not-allowed}
 
@@ -240,7 +240,7 @@
     <div class="top">
       <div>
         <h1>稅務參數後台管理</h1>
-        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v07-09</strong>　｜　GitHub 同步優化版</div>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v07-10</strong>　｜　GitHub 同步優化版</div>
       </div>
       <button class="btn logout" id="logoutBtn">登出</button>
     </div>
@@ -328,7 +328,7 @@
           <div style="flex:1 1 520px">
             <strong style="font-size:15px">財政部官方年度參數自動搜尋</strong>
             <div class="muted" style="margin-top:5px;line-height:1.6">
-              依上方「所得年度」搜尋財政部官方 RSS／公告頁，找到真正的當年度公告網址後解析參數。
+              依上方「所得年度」先比對本系統已知的財政部官方來源，再搜尋財政部官方 RSS／公告頁；找到真正的當年度公告網址後解析參數。
               系統只先比對，不會直接覆蓋；必須人工勾選並按「套用勾選項目」。
             </div>
           </div>
@@ -750,7 +750,7 @@ async function recordSuccessfulAdminLogin(account){
     browserPlatform:device.browserPlatform || '',
     language:device.language || '',
     userAgent:device.userAgent || '',
-    siteVersion:'2026.09.v07-09'
+    siteVersion:'2026.09.v07-10'
   };
 
   CURRENT_LOGIN_AUDIT_ID=entry.id;
@@ -1376,6 +1376,43 @@ function status(t){document.getElementById('status').textContent=t}
 function download(){stampVersion();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}));a.download='tax-config.json';a.click();URL.revokeObjectURL(a.href)}
 
 
+
+let MOF_ANNUAL_PRESET_CACHE=null;
+
+async function loadLocalAnnualPresetIndex(){
+  if(MOF_ANNUAL_PRESET_CACHE) return MOF_ANNUAL_PRESET_CACHE;
+  try{
+    const r=await fetch('annual-presets.json?v='+Date.now(),{cache:'no-store'});
+    if(!r.ok) return null;
+    const data=await r.json();
+    MOF_ANNUAL_PRESET_CACHE=data && typeof data==='object' ? data : null;
+    return MOF_ANNUAL_PRESET_CACHE;
+  }catch{
+    return null;
+  }
+}
+
+async function findKnownMofAnnualSource(year){
+  const presets=await loadLocalAnnualPresetIndex();
+  const p=presets?.[String(year)];
+  if(!p || typeof p!=='object') return null;
+
+  const url=cleanOfficialMofUrl(p.sourceUrl||'');
+  if(!url) return null;
+
+  const title=String(p.sourceLabel||'')
+    .replace(/^財政部[：:]\s*/,'')
+    .trim() || `財政部 ${year} 年度綜合所得稅公告`;
+
+  return {
+    title,
+    link:url,
+    pubDate:p.lastUpdated||'',
+    source:'local-index',
+    preset:p
+  };
+}
+
 let MOF_FOUND=null;
 let MOF_COMPARE_ROWS=[];
 
@@ -1473,30 +1510,64 @@ function scoreMofAnnualTitle(title,year){
 }
 
 async function findMofAnnualAnnouncement(year){
-  const items=await fetchMofRssItems();
-  const ranked=items
-    .map(x=>({...x,score:scoreMofAnnualTitle(x.title,year)}))
-    .filter(x=>x.score>=12)
-    .sort((x,y)=>y.score-x.score);
-  if(ranked.length) return ranked[0];
+  // A. 先用 annual-presets.json 內已經確認過的官方網址。
+  // 這可解決 113～115 等舊年度已不在 RSS 近期清單內的問題。
+  const known=await findKnownMofAnnualSource(year);
+  if(known) return known;
 
-  /*
-    RSS 常只保留近期項目。若找不到，使用公開搜尋讀取通道定位；
-    最終仍只接受 mof.gov.tw 官方網址。
-  */
-  const q=encodeURIComponent(`site:mof.gov.tw 公告${year}年度 綜合所得稅 免稅額 扣除額 課稅級距`);
-  const searchText=await fetchTextCorsOrReader(`https://www.google.com/search?q=${q}`);
-  const urls=[];
-  const re=/https?:\/\/(?:www\.)?mof\.gov\.tw\/(?:%20\/)?singlehtml\/[A-Za-z0-9_-]+(?:\?cntId=[A-Za-z0-9_-]+)?/gi;
-  for(const m of searchText.matchAll(re)){
-    const u=cleanOfficialMofUrl(m[0]);
-    if(u && !urls.includes(u)) urls.push(u);
+  // B. 新年度通常在公告後一段時間仍會出現在財政部 RSS。
+  try{
+    const items=await fetchMofRssItems();
+    const ranked=items
+      .map(x=>({...x,score:scoreMofAnnualTitle(x.title,year),source:'rss'}))
+      .filter(x=>x.score>=12)
+      .sort((x,y)=>y.score-x.score);
+    if(ranked.length) return ranked[0];
+  }catch{}
+
+  // C. 搜尋備援。不同公開搜尋入口可能有臨時限制，因此依序嘗試。
+  // 最終結果仍只接受 mof.gov.tw 官方網址。
+  const query=`site:mof.gov.tw 公告${year}年度 綜合所得稅 免稅額 扣除額 課稅級距`;
+  const searchUrls=[
+    `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+    `https://www.bing.com/search?q=${encodeURIComponent(query)}`,
+    `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`
+  ];
+
+  const candidateUrls=[];
+  for(const searchUrl of searchUrls){
+    try{
+      const searchText=await fetchTextCorsOrReader(searchUrl);
+
+      const re=/https?:\/\/(?:www\.)?mof\.gov\.tw\/(?:%20\/)?singlehtml\/[A-Za-z0-9_-]+(?:\?cntId=[A-Za-z0-9_-]+)?/gi;
+      for(const m of String(searchText||'').matchAll(re)){
+        const u=cleanOfficialMofUrl(m[0]);
+        if(u && !candidateUrls.includes(u)) candidateUrls.push(u);
+      }
+
+      // 搜尋結果有時會把網址 percent-encode。
+      const encoded=/https%3A%2F%2F(?:www\.)?mof\.gov\.tw%2F(?:%2520%2F)?singlehtml%2F[A-Za-z0-9_-]+(?:%3FcntId%3D[A-Za-z0-9_-]+)?/gi;
+      for(const m of String(searchText||'').matchAll(encoded)){
+        try{
+          const u=cleanOfficialMofUrl(decodeURIComponent(m[0]));
+          if(u && !candidateUrls.includes(u)) candidateUrls.push(u);
+        }catch{}
+      }
+
+      if(candidateUrls.length) break;
+    }catch{}
   }
-  for(const url of urls.slice(0,8)){
-    const txt=await fetchTextCorsOrReader(url);
-    const title=parseMofTitle(txt,year);
-    if(scoreMofAnnualTitle(title,year)>=12) return {title,link:url,pubDate:''};
+
+  for(const url of candidateUrls.slice(0,12)){
+    try{
+      const txt=await fetchTextCorsOrReader(url);
+      const title=parseMofTitle(txt,year);
+      if(scoreMofAnnualTitle(title,year)>=12){
+        return {title,link:url,pubDate:'',source:'search'};
+      }
+    }catch{}
   }
+
   return null;
 }
 
@@ -1747,18 +1818,53 @@ async function searchAndParseMofAnnualParameters(){
 
     const ann=await findMofAnnualAnnouncement(year);
     if(!ann){
-      throw new Error(`尚未找到財政部「${year}年度綜合所得稅免稅額、扣除額、課稅級距」官方公告；可能尚未發布。`);
+      throw new Error(`尚未定位到財政部「${year}年度綜合所得稅免稅額、扣除額、課稅級距」官方公告。若該年度尚未公告，請稍後再試；若已公告，可使用下方「手動 JSON 年度參數網址」作為備用。`);
     }
 
     const officialUrl=cleanOfficialMofUrl(ann.link);
+    const locatedBy = ann.source==='local-index'
+      ? '本系統年度官方來源索引'
+      : ann.source==='rss'
+        ? '財政部官方 RSS'
+        : '公開搜尋定位';
     if(!officialUrl) throw new Error('找到的網址不是 mof.gov.tw 官方網址');
 
-    showMofSearchStatus('已找到官方公告，正在解析免稅額、扣除額與課稅級距…');
+    showMofSearchStatus(`已透過「${locatedBy}」找到官方公告，正在解析免稅額、扣除額與課稅級距…`);
 
-    const text=await fetchTextCorsOrReader(officialUrl);
-    const parsed=parseMofAnnualParameters(text);
-    const title=parseMofTitle(text,year);
-    const pubDate=parseMofDate(text,ann.pubDate);
+    let text='';
+    let parsed={found:{},notes:{}};
+    let title=ann.title || `財政部 ${year} 年度綜合所得稅公告`;
+    let pubDate=ann.pubDate||'';
+
+    try{
+      text=await fetchTextCorsOrReader(officialUrl);
+      parsed=parseMofAnnualParameters(text);
+      title=parseMofTitle(text,year) || title;
+      pubDate=parseMofDate(text,ann.pubDate);
+    }catch(e){
+      // 若官方頁面暫時被 CORS / 網路政策擋住，
+      // 已知年度仍可用 annual-presets.json 內既有官方確認參數做人工比對。
+      if(ann.source!=='local-index' || !ann.preset) throw e;
+    }
+
+    if(ann.source==='local-index' && ann.preset){
+      const preset=ann.preset;
+      for(const [key,,type] of MOF_PARAM_META){
+        if(parsed.found[key]!==undefined) continue;
+        if(preset[key]===undefined) continue;
+
+        if(type==='brackets' && Array.isArray(preset[key])){
+          parsed.found[key]=structuredClone(preset[key]);
+          parsed.notes[key]='本系統年度預設值（來源網址為財政部官方公告）';
+        }else if(type!=='brackets' && Number.isFinite(Number(preset[key]))){
+          parsed.found[key]=Number(preset[key]);
+          parsed.notes[key]='本系統年度預設值（來源網址為財政部官方公告）';
+        }
+      }
+
+      if(!pubDate) pubDate=preset.lastUpdated||'';
+      if(!title) title=String(preset.sourceLabel||'').replace(/^財政部[：:]\s*/,'').trim();
+    }
 
     MOF_FOUND={
       year,
@@ -1780,7 +1886,7 @@ async function searchAndParseMofAnnualParameters(){
 
     const count=Object.keys(parsed.found).length;
     showMofSearchStatus(
-      `已找到財政部官方公告並辨識 ${count} 組參數。請逐項比對後人工確認套用。`,
+      `已透過「${locatedBy}」找到財政部官方公告，並取得 ${count} 組可比對參數。請逐項確認後再人工套用。`,
       count?'success':'warn'
     );
   }catch(e){
