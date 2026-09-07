@@ -1,4 +1,4 @@
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v07-07</title><style>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v07-09</title><style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:28px 18px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 2px 8px #0f172a0a}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px 11px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}.primary{background:#0f172a;color:#fff}.secondary{background:#e2e8f0}.success{background:#059669;color:#fff}.danger{background:#fee2e2;color:#b91c1c}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#64748b;font-size:13px}[hidden]{display:none!important}.hidden{display:none!important}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left;font-size:13px}.status{padding:10px 12px;border-radius:9px;background:#f1f5f9;margin-top:12px;white-space:pre-wrap}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1,h2{margin:0 0 14px}code{background:#f1f5f9;padding:2px 5px;border-radius:5px}.login{max-width:620px;margin:8vh auto}.note{background:#fffbeb;border:1px solid #fde68a;padding:11px;border-radius:9px;font-size:13px}
 .login-card{max-width:520px;margin:10vh auto}.login-card h1{font-size:30px}.login-error{margin-top:12px;color:#b91c1c;font-weight:700;font-size:13px}.login-actions{margin-top:16px}.logout{background:#475569;color:#fff} input:disabled{background:#f1f5f9;color:#475569;font-weight:700;cursor:not-allowed}
 
@@ -229,12 +229,8 @@
     <h1 style="text-align:center;margin-bottom:22px">登入</h1>
     <div class="field"><label>帳號</label><input id="loginAccount" autocomplete="username" autofocus=""></div>
     <div class="field" style="margin-top:14px"><label>密碼</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
-    <div class="field" style="margin-top:14px">
-      <label>電腦名稱／識別名稱</label>
-      <input id="loginComputerName" type="text" autocomplete="off" placeholder="例：事務所-會計01">
-      <div class="muted" style="margin-top:6px;line-height:1.6">
-        瀏覽器基於安全限制無法自動讀取 Windows／macOS 的真正電腦名稱；請輸入識別名稱。成功登入後會記住在此瀏覽器。
-      </div>
+    <div id="autoDeviceInfoLogin" class="muted" style="margin-top:12px;line-height:1.6">
+      登入裝置與 IP 由系統自動辨識並記錄，不需另外填寫。
     </div>
     <div class="login-actions"><button class="btn primary" id="loginBtn" style="width:100%">登入</button></div>
     <div id="loginError" class="login-error" style="text-align:center"></div>
@@ -244,7 +240,7 @@
     <div class="top">
       <div>
         <h1>稅務參數後台管理</h1>
-        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v07-07</strong>　｜　GitHub 同步優化版</div>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v07-09</strong>　｜　GitHub 同步優化版</div>
       </div>
       <button class="btn logout" id="logoutBtn">登出</button>
     </div>
@@ -509,7 +505,7 @@
     <div class="card">
       <h2>後台登入紀錄</h2>
       <div class="muted" style="line-height:1.7;margin-bottom:12px">
-        成功登入後會記錄：登入帳號、登入時間、電腦識別名稱、公開 IP、瀏覽器／作業系統資訊。
+        成功登入後會全自動記錄：登入帳號、登入時間、裝置識別、公開 IP、瀏覽器／作業系統資訊；不需另外設定電腦名稱。若部分裝置資訊不可取得，系統只記錄可取得的資訊，至少保留登入時間、帳號與公開 IP（若 IP 查詢未被網路阻擋）。
         本機會立即保存；因 GitHub Pages 是純前端網站，尚未輸入 GitHub Token 前無法寫入中央記錄檔。
         當 Token 測試成功、同步前台或按下「同步登入紀錄」時，會把待同步紀錄寫入 <code>admin-login-log.json</code>。
       </div>
@@ -525,7 +521,7 @@
             <tr>
               <th>登入時間</th>
               <th>帳號</th>
-              <th>電腦名稱</th>
+              <th>裝置識別</th>
               <th>公開 IP</th>
               <th>瀏覽器／平台</th>
               <th>同步</th>
@@ -535,8 +531,10 @@
         </table>
       </div>
       <div class="note" style="margin-top:10px">
-        <strong>電腦名稱說明：</strong>一般瀏覽器基於隱私與安全限制，無法自動取得 Windows/macOS 真正主機名稱；
-        因此本系統使用登入頁輸入的「電腦名稱／識別名稱」，並記住於該瀏覽器。
+        <strong>全自動辨識：</strong>
+        登入頁不需要填寫電腦名稱。系統會自動建立此瀏覽器的穩定裝置識別，並記錄可取得的瀏覽器／作業系統資訊與公開 IP。
+        一般瀏覽器無法讀取 Windows／macOS 真正的主機名稱，因此「裝置識別」是系統自動建立的識別碼。
+        若安全環境限制部分裝置資訊，系統會自動降級，只保存能取得的資料；若公開 IP 查詢也被網路或防火牆阻擋，IP 會顯示「無法取得」。
       </div>
     </div>
 
@@ -578,7 +576,7 @@ const ADMIN_PASSWORD='password';
 
 const LOGIN_AUDIT_LOCAL_KEY='tax_admin_login_audit_v1';
 const LOGIN_AUDIT_PENDING_KEY='tax_admin_login_pending_v1';
-const LOGIN_COMPUTER_NAME_KEY='tax_admin_computer_name_v1';
+const LOGIN_DEVICE_ID_KEY='tax_admin_device_id_v1';
 let CURRENT_LOGIN_AUDIT_ID='';
 
 function getJsonLocal(key,fallback=[]){
@@ -597,6 +595,77 @@ function setJsonLocal(key,value){
 function makeAuditId(){
   if(globalThis.crypto?.randomUUID) return crypto.randomUUID();
   return 'audit-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+}
+
+
+function getOrCreateDeviceId(){
+  try{
+    let id=localStorage.getItem(LOGIN_DEVICE_ID_KEY)||'';
+    if(id) return id;
+
+    const raw=globalThis.crypto?.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+
+    id='DEV-'+raw.replace(/-/g,'').slice(0,12).toUpperCase();
+    localStorage.setItem(LOGIN_DEVICE_ID_KEY,id);
+
+    // 確認此安全環境允許保存穩定識別
+    if(localStorage.getItem(LOGIN_DEVICE_ID_KEY)!==id) return null;
+    return id;
+  }catch{
+    return null;
+  }
+}
+
+function getAutomaticDeviceInfo(){
+  const info={
+    deviceName:'',
+    browserPlatform:'',
+    language:'',
+    userAgent:'',
+    deviceId:''
+  };
+
+  try{
+    const id=getOrCreateDeviceId();
+    if(id){
+      info.deviceId=id;
+    }
+  }catch{}
+
+  try{
+    const ua=String(navigator.userAgent||'');
+    const platform=String(navigator.userAgentData?.platform || navigator.platform || '');
+    const language=String(navigator.language||'');
+
+    let browser='';
+    if(/Edg\//.test(ua)) browser='Edge';
+    else if(/OPR\//.test(ua)) browser='Opera';
+    else if(/Chrome\//.test(ua)) browser='Chrome';
+    else if(/Firefox\//.test(ua)) browser='Firefox';
+    else if(/Safari\//.test(ua)) browser='Safari';
+
+    const os =
+      /Windows/i.test(platform)||/Windows/i.test(ua) ? 'Windows' :
+      /Mac/i.test(platform)||/Mac OS/i.test(ua) ? 'macOS' :
+      /Android/i.test(ua) ? 'Android' :
+      /iPhone|iPad|iOS/i.test(ua) ? 'iOS' :
+      /Linux/i.test(platform)||/Linux/i.test(ua) ? 'Linux' :
+      (platform || '');
+
+    info.userAgent=ua;
+    info.language=language;
+    info.browserPlatform=[browser,platform].filter(Boolean).join(' / ');
+
+    if(info.deviceId){
+      info.deviceName=[os,browser,info.deviceId].filter(Boolean).join('-');
+    }else{
+      info.deviceName=[os,browser].filter(Boolean).join('-');
+    }
+  }catch{}
+
+  return info;
 }
 
 async function getPublicIp(){
@@ -639,9 +708,9 @@ function renderLoginAudit(){
     const vals=[
       log.loginAtLocal||log.loginAt||'',
       log.account||'',
-      log.computerName||'未設定',
+      (log.computerName||log.deviceId||'僅 IP'),
       log.publicIp||'',
-      log.browserPlatform||''
+      (log.browserPlatform||'—')
     ];
     vals.forEach(v=>{
       const td=document.createElement('td');
@@ -666,19 +735,22 @@ function renderLoginAudit(){
   }
 }
 
-async function recordSuccessfulAdminLogin(account,computerName){
+async function recordSuccessfulAdminLogin(account){
   const now=new Date();
+  const device=getAutomaticDeviceInfo();
+
   const entry={
     id:makeAuditId(),
     loginAt:now.toISOString(),
     loginAtLocal:now.toLocaleString('zh-TW',{hour12:false}),
     account,
-    computerName:computerName||'未設定',
     publicIp:'查詢中',
-    browserPlatform:browserPlatformSummary(),
-    language:navigator.language||'',
-    userAgent:navigator.userAgent||'',
-    siteVersion:'2026.09.v07-07'
+    computerName:device.deviceName || '',
+    deviceId:device.deviceId || '',
+    browserPlatform:device.browserPlatform || '',
+    language:device.language || '',
+    userAgent:device.userAgent || '',
+    siteVersion:'2026.09.v07-09'
   };
 
   CURRENT_LOGIN_AUDIT_ID=entry.id;
@@ -706,6 +778,7 @@ async function recordSuccessfulAdminLogin(account,computerName){
   const j=pending2.findIndex(x=>x.id===entry.id);
   if(j>=0) pending2[j]=entry;
   setJsonLocal(LOGIN_AUDIT_PENDING_KEY,pending2);
+
   renderLoginAudit();
 }
 
@@ -820,25 +893,16 @@ function showLogin(){
   admin.classList.add('hidden');
   admin.style.display='none';
   document.getElementById('loginPassword').value='';
-  const savedComputerName=localStorage.getItem(LOGIN_COMPUTER_NAME_KEY)||'';
-  const computerInput=document.getElementById('loginComputerName');
-  if(computerInput && !computerInput.value) computerInput.value=savedComputerName;
   document.getElementById('loginError').textContent='';
 }
 function enterAdmin(){
   const account=document.getElementById('loginAccount').value.trim();
   const password=document.getElementById('loginPassword').value;
-  const computerName=document.getElementById('loginComputerName').value.trim();
   if(account!==ADMIN_ACCOUNT || password!==ADMIN_PASSWORD){
     document.getElementById('loginError').textContent='帳號或密碼錯誤。';
     return;
   }
-  if(!computerName){
-    document.getElementById('loginError').textContent='請輸入電腦名稱／識別名稱，以建立登入紀錄。';
-    return;
-  }
-  localStorage.setItem(LOGIN_COMPUTER_NAME_KEY,computerName);
-  recordSuccessfulAdminLogin(account,computerName);
+  recordSuccessfulAdminLogin(account);
   const login=document.getElementById('loginView');
   const admin=document.getElementById('adminView');
   login.hidden=true;
