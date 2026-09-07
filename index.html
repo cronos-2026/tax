@@ -978,7 +978,7 @@
 
 
 
-/* ===== 簡潔視覺優化 2026.09.v07-17 ===== */
+/* ===== 簡潔視覺優化 2026.09.v07-21 ===== */
 :root{
   --ui-bg:#f8fafc;
   --ui-card:#ffffff;
@@ -1083,7 +1083,7 @@ section,.rounded-xl,.rounded-lg{
 
 
 
-/* ===== 列印空白尾頁修正 2026.09.v07-17 ===== */
+/* ===== 列印空白尾頁修正 2026.09.v07-21 ===== */
 
 
 
@@ -1094,7 +1094,7 @@ section,.rounded-xl,.rounded-lg{
 
 
 
-/* ===== 取消頂部固定 2026.09.v07-17 ===== */
+/* ===== 取消頂部固定 2026.09.v07-21 ===== */
 header,
 main > section:first-of-type,
 .sticky,
@@ -1110,7 +1110,7 @@ main > section:first-of-type {
 
 
 
-/* ===== 2026.09.v07-17：移除網址列下方多餘頂部空白 ===== */
+/* ===== 2026.09.v07-21：移除網址列下方多餘頂部空白 ===== */
 html, body {
   margin-top: 0 !important;
   padding-top: 0 !important;
@@ -1137,7 +1137,7 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v07-17：後台未啟用額外項目時，不保留空白區塊 ===== */
+/* ===== 2026.09.v07-21：後台未啟用額外項目時，不保留空白區塊 ===== */
 #optional-deductions-section.hidden {
   display: none !important;
   margin: 0 !important;
@@ -1147,15 +1147,15 @@ body > .page-root {
 }
 
 
-/* ===== 2026.09.v07-17 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
+/* ===== 2026.09.v07-21 智慧列印：可一頁則一頁，否則依兩個標題強制分二頁 ===== */
 
 
 
-/* ===== 2026.09.v07-17：列印時「基礎資料設定」雙欄排列 ===== */
+/* ===== 2026.09.v07-21：列印時「基礎資料設定」雙欄排列 ===== */
 
 
 
-/* ===== 2026.09.v07-17：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
+/* ===== 2026.09.v07-21：超過二頁才將基礎資料雙欄，並自動縮小間距 ===== */
 
 
 
@@ -1175,22 +1175,22 @@ body > .page-root {
         
 
 
-/* ===== 2026.09.v07-17：Chrome / Edge 跨瀏覽器列印穩定修正 ===== */
+/* ===== 2026.09.v07-21：Chrome / Edge 跨瀏覽器列印穩定修正 ===== */
 
 
 
 
-/* ===== 2026.09.v07-17：兩頁內自然排版，超過兩頁才啟用雙欄 ===== */
+/* ===== 2026.09.v07-21：兩頁內自然排版，超過兩頁才啟用雙欄 ===== */
 
 
 
 
-/* ===== 2026.09.v07-17：列印大片空白根本修正 ===== */
+/* ===== 2026.09.v07-21：列印大片空白根本修正 ===== */
 
 
 
 
-/* ===== 2026.09.v07-17：列印標題列不再獨佔一頁 ===== */
+/* ===== 2026.09.v07-21：列印標題列不再獨佔一頁 ===== */
 #print-title-inline {
   display: none;
 }
@@ -1199,17 +1199,17 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v07-17：列印時完全移除整塊標題區 ===== */
+/* ===== 2026.09.v07-21：列印時完全移除整塊標題區 ===== */
 
 
 
 
-/* ===== 2026.09.v07-17：列印保留標題，但自動壓縮高度 ===== */
+/* ===== 2026.09.v07-21：列印保留標題，但自動壓縮高度 ===== */
 
 
 
 
-/* ===== 2026.09.v07-17：統一列印規則（移除所有舊版列印衝突） ===== */
+/* ===== 2026.09.v07-21：統一列印規則（移除所有舊版列印衝突） ===== */
 @media print {
   @page {
     size: A4 landscape;
@@ -1517,7 +1517,7 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v07-17：新增自定義欄位（不改原有欄位） ===== */
+/* ===== 2026.09.v07-21：新增自定義欄位（不改原有欄位） ===== */
 .custom-fields-zone:empty{display:none!important}
 .custom-field-row{
   display:grid;
@@ -1565,7 +1565,7 @@ body > .page-root {
 
 
 
-/* ===== 2026.09.v07-17：獨立自定義版面（不改預定列印方式） ===== */
+/* ===== 2026.09.v07-21：獨立自定義版面（不改預定列印方式） ===== */
 .custom-layout-block{
   width:100%;
   border:1px solid #dbe3ea;
@@ -1825,7 +1825,7 @@ body > .page-root {
     <!-- Footer -->
     <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-5 text-center text-sm text-slate-400">
-            © 2026.09.v07-17
+            © 2026.09.v07-21
         </div>
     </footer>
 
@@ -1838,7 +1838,7 @@ const DEFAULT_TAX_CONFIG = {
     pageNotice: "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
     showHeaderSection: true,
     taxYear: 115,
-    siteVersion: "2026.09.v07-17",
+    siteVersion: "2026.09.v07-21",
     basicLivingExpense: 213000,
     exemption: 101000,
     standardDeductionSingle: 136000,
@@ -1945,7 +1945,7 @@ function applyTaxConfig(raw) {
     TAX_115 = TAX_CONFIG;
     BASIC_LIVING_EXPENSE_COMPARE = Number(TAX_CONFIG.basicLivingExpense || 0);
     const badge = document.querySelector('header .rounded-md.bg-emerald-100');
-    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v07-17';
+    if (badge) badge.textContent = TAX_CONFIG.siteVersion || '2026.09.v07-21';
     const y = Number(TAX_CONFIG.taxYear || 115);
     const adYear = y + 1911;
     document.title = `${TAX_CONFIG.pageTitle || '創業，我該設立商號還是公司呢?'}｜${y}年所得最佳化`;
