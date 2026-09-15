@@ -1,18 +1,5 @@
 {
   "schemaVersion": 1,
-  "savingsInvestmentDeduction": 270000,
-  "educationTuitionDeduction": 25000,
-  "preschoolFirstChildDeduction": 150000,
-  "preschoolAdditionalChildDeduction": 225000,
-  "houseRentDeduction": 180000,
-  "dividendCreditRate": 0.085,
-  "dividendCreditCap": 80000,
-  "dividendSeparateRate": 0.28,
-  "legalReserveRate": 0.1,
-  "businessTaxExemptThreshold": 120000,
-  "businessTaxTransitionThreshold": 200000,
-  "businessTaxTransitionRate": 0.5,
-  "businessTaxRate": 0.2,
   "taxYear": 115,
   "lastUpdated": "2026-09-15",
   "sourceLabel": "財政部：財政部持續推動綜合所得稅減稅惠民措施，有感減輕民眾負擔",
@@ -23,7 +10,20 @@
   "standardDeductionMarried": 272000,
   "salarySpecialDeduction": 227000,
   "disabilitySpecialDeduction": 227000,
+  "savingsInvestmentDeduction": 270000,
+  "educationTuitionDeduction": 25000,
+  "preschoolFirstChildDeduction": 150000,
+  "preschoolAdditionalChildDeduction": 225000,
   "longTermCareDeduction": 180000,
+  "houseRentDeduction": 180000,
+  "dividendCreditRate": 0.085,
+  "dividendCreditCap": 80000,
+  "dividendSeparateRate": 0.28,
+  "legalReserveRate": 0.1,
+  "businessTaxExemptThreshold": 120000,
+  "businessTaxTransitionThreshold": 200000,
+  "businessTaxTransitionRate": 0.5,
+  "businessTaxRate": 0.2,
   "brackets": [
     {
       "limit": 610000,
@@ -99,8 +99,10 @@
       "enabled": true
     }
   },
+  "pageNotice": "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
+  "showHeaderSection": true,
+  "siteVersion": "v2026.09",
   "customFields": [],
   "customCalculationFields": [],
-  "sourcePublishDate": "2026-02-03",
-  "siteVersion": "v2026.09"
+  "sourcePublishDate": "2026-02-03"
 }
