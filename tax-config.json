@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taxYear": 115,
-  "lastUpdated": "2026-09-05",
+  "lastUpdated": "2026-09-15",
   "sourceLabel": "財政部：財政部持續推動綜合所得稅減稅惠民措施，有感減輕民眾負擔",
   "basicLivingExpense": 213000,
   "exemption": 101000,
@@ -101,7 +101,7 @@
   },
   "pageNotice": "本頁為試算工具；扶養、長照、學前子女等資格仍應依實際申報條件判斷。若資格不符，試算結果可能與實際申報不同。",
   "showHeaderSection": true,
-  "siteVersion": "2026.09.v07-23",
+  "siteVersion": "v2026.09",
   "customFields": [],
   "customCalculationFields": [],
   "sourcePublishDate": "2026-02-03"
