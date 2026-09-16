@@ -1,4 +1,4 @@
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v07-23</title><style>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>稅務試算後台管理｜TAX FINAL 2026.09.v16-01</title><style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:28px 18px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 2px 8px #0f172a0a}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:10px 11px;background:#fff}.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:700;cursor:pointer}.primary{background:#0f172a;color:#fff}.secondary{background:#e2e8f0}.success{background:#059669;color:#fff}.danger{background:#fee2e2;color:#b91c1c}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#64748b;font-size:13px}[hidden]{display:none!important}.hidden{display:none!important}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left;font-size:13px}.status{padding:10px 12px;border-radius:9px;background:#f1f5f9;margin-top:12px;white-space:pre-wrap}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1,h2{margin:0 0 14px}code{background:#f1f5f9;padding:2px 5px;border-radius:5px}.login{max-width:620px;margin:8vh auto}.note{background:#fffbeb;border:1px solid #fde68a;padding:11px;border-radius:9px;font-size:13px}
 .login-card{max-width:520px;margin:10vh auto}.login-card h1{font-size:30px}.login-error{margin-top:12px;color:#b91c1c;font-weight:700;font-size:13px}.login-actions{margin-top:16px}.logout{background:#475569;color:#fff} input:disabled{background:#f1f5f9;color:#475569;font-weight:700;cursor:not-allowed}
 
@@ -250,7 +250,7 @@
     <div class="top">
       <div>
         <h1>稅務參數後台管理</h1>
-        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v07-23</strong>　｜　GitHub 同步優化版</div>
+        <div class="muted">正式前台參數檔：<code>tax-config.json</code>　｜　網站版本：<strong id="versionLabel">2026.09.v16-01</strong>　｜　GitHub 同步優化版</div>
       </div>
       <button class="btn logout" id="logoutBtn">登出</button>
     </div>
@@ -559,7 +559,7 @@
       </div>
       <p class="muted" style="line-height:1.7">
         此版本已固定同步到 <strong>cronos-2026/tax</strong> 的 <code>tax-config.json</code>，避免誤選 Repository。<br>
-        修改後可先測試 Token，再按「同步更新前台」。GitHub Pages 完成部署後，前台重新整理即可讀取新參數。
+        若只要在目前電腦暫時查看調整結果，不需 Token：保持「永久調整」未勾選，再按「套用調整到前台」。<br>只有勾選「永久調整」時才會要求 GitHub Token，並寫入 GitHub 形成正式永久設定。
       </p>
       <div id="githubFixedTargetFields" class="grid" style="display:none!important" aria-hidden="true">
         <div class="field"><label>GitHub Owner</label><input id="ghOwner" type="text" value="cronos-2026" readonly></div>
@@ -575,12 +575,25 @@
           Token 必須授權 <strong>cronos-2026/tax</strong>，Repository permissions → <strong>Contents：Read and write</strong>。
         </div>
       </div>
+      <div class="field" style="margin-top:14px">
+        <label class="header-toggle-row" style="align-items:flex-start">
+          <input id="permanentAdjustCheck" type="checkbox">
+          <span>
+            <strong>永久調整</strong>
+            <span class="muted" style="display:block;margin-top:4px;line-height:1.6">
+              未勾選：不需要 GitHub Token，只在目前這台電腦／目前瀏覽器暫時顯示調整後的前台。<br>
+              勾選：需要 GitHub Token，會更新 GitHub 的 <code>tax-config.json</code>，所有裝置重新整理後永久套用。
+            </span>
+          </span>
+        </label>
+      </div>
       <div class="row" style="margin-top:14px">
         <button class="btn secondary" id="testGithubBtn">測試 GitHub Token</button>
-        <button class="btn success" id="syncGithubBtn">同步更新前台</button>
+        <button class="btn success" id="syncGithubBtn">套用調整到前台</button>
+        <button class="btn secondary" id="clearLocalPreviewBtn" type="button">清除本機暫存</button>
         <button class="btn secondary" id="saveLocalBtn">下載 tax-config.json 備份</button>
       </div>
-      <div id="status" class="status">尚未同步。</div>
+      <div id="status" class="status">尚未套用調整。</div>
     </div>
   </div>
 </div>
@@ -852,7 +865,7 @@ async function recordSuccessfulAdminLogin(account){
     browserPlatform:device.browserPlatform || '',
     language:device.language || '',
     userAgent:device.userAgent || '',
-    siteVersion:'2026.09.v07-23'
+    siteVersion:'2026.09.v16-01'
   };
 
   CURRENT_LOGIN_AUDIT_ID=entry.id;
@@ -1052,6 +1065,22 @@ document.getElementById('logoutBtn').onclick=showLogin;
 const FIELDS={deductions:[['basicLivingExpense','每人基本生活費'],['exemption','一般免稅額'],['seniorExemption','70歲以上免稅額'],['standardDeductionSingle','標準扣除額－單身'],['standardDeductionMarried','標準扣除額－夫妻'],['salarySpecialDeduction','薪資所得特別扣除額'],['disabilitySpecialDeduction','身心障礙特別扣除額'],['savingsInvestmentDeduction','儲蓄投資特別扣除額上限'],['educationTuitionDeduction','教育學費特別扣除額'],['preschoolFirstChildDeduction','幼兒學前－第1名子女'],['preschoolAdditionalChildDeduction','幼兒學前－第2名以上每人'],['longTermCareDeduction','長期照顧特別扣除額'],['houseRentDeduction','房屋租金支出特別扣除額']],other:[['dividendCreditRate','股利抵減率'],['dividendCreditCap','股利抵減上限'],['dividendSeparateRate','股利分開計稅率'],['legalReserveRate','法定盈餘公積提列率'],['businessTaxExemptThreshold','營所稅免徵門檻'],['businessTaxTransitionThreshold','營所稅過渡門檻'],['businessTaxTransitionRate','營所稅過渡區間計算係數'],['businessTaxRate','營所稅率']]};
 let cfg={};
 let annualPresetsCache=null;
+const LOCAL_PREVIEW_CONFIG_KEY='tax_front_local_preview_config_v1';
+
+function saveTemporaryFrontPreview(){
+  const payload={
+    savedAt:new Date().toISOString(),
+    config:structuredClone(cfg)
+  };
+  localStorage.setItem(LOCAL_PREVIEW_CONFIG_KEY,JSON.stringify(payload));
+  status('已暫時套用到目前這台電腦／瀏覽器。前台重新整理後即可看到調整結果；未寫入 GitHub。');
+}
+
+function clearTemporaryFrontPreview(){
+  localStorage.removeItem(LOCAL_PREVIEW_CONFIG_KEY);
+  status('已清除本機暫存調整。前台重新整理後會恢復使用 GitHub 正式參數。');
+}
+
 function fieldHtml(k,n){
   let note='';
   if(k==='businessTaxTransitionRate'){
@@ -1062,7 +1091,7 @@ function fieldHtml(k,n){
   }
   return `<div class="field"><label>${n}</label><input data-key="${k}" type="number" step="any">${note}</div>`;
 }
-function currentSiteVersion(){const d=new Date();return `v${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}`}
+function currentSiteVersion(){return '2026.09.v16-01'}
 function stampVersion(){cfg.siteVersion=currentSiteVersion();cfg.lastUpdated=new Date().toISOString().slice(0,10);const el=document.getElementById('versionLabel');if(el)el.textContent=cfg.siteVersion}
 function updateSourceLink(sourceCfg=null){
   const label=document.getElementById('sourceLabelDisplay');
@@ -2345,7 +2374,7 @@ async function testGithubConnection(){
   }
 }
 
-async function syncToGithub(){
+async function syncToGithubPermanent(){
   const btn=document.getElementById('syncGithubBtn');
   try{
     btn.disabled=true;
@@ -2376,7 +2405,8 @@ async function syncToGithub(){
       body:JSON.stringify(body)
     });
 
-    status('同步成功。GitHub 已更新 tax-config.json；GitHub Pages 通常需要約 1～2 分鐘完成部署，之後前台重新整理即可看到新參數。');
+    localStorage.removeItem(LOCAL_PREVIEW_CONFIG_KEY);
+    status('永久調整同步成功。GitHub 已更新 tax-config.json；本機暫存已清除。GitHub Pages 完成部署後，所有裝置重新整理即可看到新參數。');
     syncPendingLoginAuditToGithub(true).catch(()=>{});
   }catch(e){
     status('同步失敗：'+friendlyGithubError(e.message));
@@ -2385,11 +2415,30 @@ async function syncToGithub(){
   }
 }
 
+
+async function applyFrontAdjustment(){
+  const permanent=!!document.getElementById('permanentAdjustCheck')?.checked;
+
+  if(!permanent){
+    saveTemporaryFrontPreview();
+    return;
+  }
+
+  const token=document.getElementById('ghToken')?.value.trim();
+  if(!token){
+    status('已勾選「永久調整」，請先輸入 GitHub Token 才能執行。');
+    return;
+  }
+
+  await syncToGithubPermanent();
+}
+
 document.getElementById('reloadBtn').onclick=()=>loadConfig().catch(e=>status('讀取失敗：'+e.message));
 document.getElementById('presetBtn').onclick=applyPreset;
 document.getElementById('saveLocalBtn').onclick=download;
+document.getElementById('clearLocalPreviewBtn').onclick=clearTemporaryFrontPreview;
 document.getElementById('testGithubBtn').onclick=testGithubConnection;
-document.getElementById('syncGithubBtn').onclick=syncToGithub;
+document.getElementById('syncGithubBtn').onclick=applyFrontAdjustment;
 document.getElementById('exportBtn').onclick=download;
 document.getElementById('importFile').onchange=async e=>{
   try{

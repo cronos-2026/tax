@@ -1,32 +1,5 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-15T12:25:29.129Z",
-  "logs": [
-    {
-      "id": "fb0167a0-2cef-449f-989f-39f8f1f935d5",
-      "loginAt": "2026-09-15T12:21:16.493Z",
-      "loginAtLocal": "2026/9/15 20:21:16",
-      "account": "admin",
-      "publicIp": "1.171.195.38",
-      "computerName": "Windows-Edge-DEV-498B12D6D5F6",
-      "deviceId": "DEV-498B12D6D5F6",
-      "browserPlatform": "Edge / Windows",
-      "language": "zh-TW",
-      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
-      "siteVersion": "2026.09.v07-23"
-    },
-    {
-      "id": "e2845aad-f1af-4d41-9fc2-f19558458869",
-      "loginAt": "2026-09-15T12:22:01.628Z",
-      "loginAtLocal": "2026/9/15 20:22:01",
-      "account": "admins",
-      "publicIp": "1.171.195.38",
-      "computerName": "Windows-Edge-DEV-498B12D6D5F6",
-      "deviceId": "DEV-498B12D6D5F6",
-      "browserPlatform": "Edge / Windows",
-      "language": "zh-TW",
-      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36 Edg/154.0.0.0",
-      "siteVersion": "2026.09.v07-23"
-    }
-  ]
+  "updatedAt": null,
+  "logs": []
 }
